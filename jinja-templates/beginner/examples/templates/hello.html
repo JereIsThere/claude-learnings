@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Hallo · {{ super() }}{% endblock %}
+
+{% block content %}
+  {% if name %}
+    <p>Hallo, <strong>{{ name|upper }}</strong>! Schön, dass du da bist.</p>
+  {% else %}
+    <p>Hallo, Fremder! Hänge <code>?name=DeinName</code> an die URL.</p>
+  {% endif %}
+
+  <h2>Eingebaute Filter — kleine Show</h2>
+  {% set tags = ['python', 'flask', 'jinja'] %}
+  <ul>
+    <li>length: {{ tags|length }}</li>
+    <li>join: {{ tags|join(', ') }}</li>
+    <li>upper: {{ tags|join(', ')|upper }}</li>
+    <li>reverse + first: {{ (tags|reverse|list)[0] }}</li>
+    <li>default: {{ unbekannt|default('— nicht gesetzt —') }}</li>
+  </ul>
+{% endblock %}

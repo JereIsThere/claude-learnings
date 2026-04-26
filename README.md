@@ -20,6 +20,10 @@ Fundamentals of efficient programming. Arrays, Trees, Graphs, Sorting, and compl
 Machine Learning fundamentals and neural networks. Perfect preparation for ML courses at university.
 - **[TensorFlow/Keras Learning Path →](./tensorflow-keras/README.md)**
 
+### 5. **Jinja Templates** 🌙
+Vom Träumer eingerichtet: Template-Vererbung, Filter & Macros, Kontext/Scoping und Autoescape/SSTI — die vier verbundenen Konzepte, die Jinja in Flask, Ansible & Co. ausmachen. Inklusive vollständiger Lern-Webpage und 7 Übungen.
+- **[Jinja Learning Path →](./jinja-templates/README.md)** · **[Webpage öffnen →](./jinja-templates/index.html)**
+
 ---
 
 ## How to Use This Repository

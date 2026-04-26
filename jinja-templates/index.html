@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jinja Templates — der Träumer's Lernreise</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --night: #0f1230;
+      --night-2: #1a1d4a;
+      --paper: #f6f4ee;
+      --ink: #1c1c2e;
+      --muted: #6b6883;
+      --moon: #f5d76e;
+      --lilac: #b39bd8;
+      --rose: #e8a4b8;
+      --mint: #7fc8a9;
+      --code-bg: #14152e;
+      --code-fg: #d8d8f0;
+      --code-accent: #f5d76e;
+      --radius: 16px;
+      --shadow: 0 12px 40px -16px rgba(15, 18, 48, 0.45);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    /* Dreamy night sky behind the header */
+    .skyline {
+      position: relative;
+      background:
+        radial-gradient(ellipse 60% 80% at 80% 10%, rgba(245,215,110,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 15% 30%, rgba(179,155,216,0.30) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(232,164,184,0.18) 0%, transparent 70%),
+        linear-gradient(180deg, var(--night) 0%, var(--night-2) 100%);
+      color: var(--paper);
+      padding: 96px 24px 120px;
+      overflow: hidden;
+    }
+
+    .skyline::before {
+      /* Stars */
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 12% 18%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 28% 70%, white 50%, transparent 51%),
+        radial-gradient(2px 2px at 62% 22%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 78% 55%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 88% 12%, white 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 40% 38%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 8% 80%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 92% 78%, white 50%, transparent 51%),
+        radial-gradient(2px 2px at 50% 86%, white 50%, transparent 51%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--moon);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .lead {
+      font-size: 1.2rem;
+      max-width: 620px;
+      color: rgba(246, 244, 238, 0.82);
+      font-weight: 300;
+    }
+
+    .moon {
+      position: absolute;
+      top: 60px;
+      right: 40px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff5d0 0%, #f5d76e 60%, #c89c2a 100%);
+      box-shadow: 0 0 60px 8px rgba(245,215,110,0.25);
+    }
+
+    @media (max-width: 640px) { .moon { width: 60px; height: 60px; top: 30px; right: 24px; } }
+
+    /* Page body */
+    main {
+      padding: 0 24px 80px;
+      margin-top: -60px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(15,18,48,0.05);
+    }
+
+    .card.intro {
+      background: linear-gradient(135deg, #fff 0%, #fdf9f0 100%);
+    }
+
+    h2 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      margin: 28px 0 10px;
+      color: var(--night);
+    }
+
+    h4 {
+      font-size: 0.85rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 22px 0 8px;
+      font-weight: 600;
+    }
+
+    p { margin-bottom: 14px; }
+
+    .concept-num {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--night);
+      color: var(--moon);
+      font-family: 'Fraunces', serif;
+      text-align: center;
+      line-height: 36px;
+      margin-right: 12px;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+
+    .vivid {
+      background: linear-gradient(90deg, rgba(179,155,216,0.18), rgba(232,164,184,0.18));
+      border-left: 3px solid var(--lilac);
+      padding: 14px 18px;
+      border-radius: 0 12px 12px 0;
+      margin: 16px 0 18px;
+      font-style: italic;
+      color: var(--night);
+    }
+
+    .vivid strong { font-style: normal; }
+
+    code, pre {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+
+    code {
+      background: rgba(15,18,48,0.06);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 18px 22px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      margin: 12px 0 18px;
+    }
+
+    pre code { background: transparent; padding: 0; color: inherit; font-size: inherit; }
+
+    pre .c { color: #7c7ca3; font-style: italic; }
+    pre .k { color: var(--code-accent); }
+    pre .s { color: var(--mint); }
+    pre .v { color: var(--rose); }
+    pre .d { color: var(--lilac); font-weight: 500; }
+
+    .pitfall {
+      background: #fdf2f2;
+      border-left: 3px solid #d96666;
+      padding: 12px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+
+    .pitfall strong { color: #b94444; }
+
+    .truth {
+      background: #f0f7f3;
+      border-left: 3px solid var(--mint);
+      padding: 12px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+
+    .truth strong { color: #3d7a5b; }
+
+    /* Concept connection diagram */
+    .web {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin: 24px 0 8px;
+    }
+
+    .web .node {
+      background: var(--night);
+      color: var(--paper);
+      border-radius: 12px;
+      padding: 16px 18px;
+      position: relative;
+    }
+
+    .web .node .num {
+      color: var(--moon);
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .web .node .name {
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .web .node .why {
+      font-size: 0.88rem;
+      color: rgba(246,244,238,0.7);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 540px) { .web { grid-template-columns: 1fr; } }
+
+    /* Exercises */
+    details.exercise {
+      background: #faf8f3;
+      border: 1px solid rgba(15,18,48,0.08);
+      border-radius: 12px;
+      padding: 16px 22px;
+      margin-bottom: 12px;
+      transition: background 0.2s;
+    }
+
+    details.exercise[open] { background: #fffdf7; }
+
+    details.exercise summary {
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 0;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    details.exercise summary::-webkit-details-marker { display: none; }
+
+    details.exercise summary::before {
+      content: '▸';
+      color: var(--lilac);
+      transition: transform 0.2s;
+    }
+
+    details.exercise[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    .level-pill {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .level-pill.easy { background: #e8f3ec; color: #3d7a5b; }
+    .level-pill.med { background: #fdf3e8; color: #a86b2c; }
+    .level-pill.hard { background: #fce8ec; color: #a04050; }
+
+    .exercise-body {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed rgba(15,18,48,0.1);
+    }
+
+    .exercise-body p { margin-bottom: 10px; }
+
+    /* CTA + GitHub */
+    .cta {
+      background: var(--night);
+      color: var(--paper);
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .cta h2 { color: var(--moon); margin-bottom: 8px; }
+    .cta p { color: rgba(246,244,238,0.78); margin-bottom: 22px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--moon);
+      color: var(--night);
+      padding: 12px 24px;
+      border-radius: 99px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -8px rgba(245,215,110,0.5);
+    }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--paper);
+      border: 1px solid rgba(246,244,238,0.3);
+      margin-left: 8px;
+    }
+
+    .sources {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 18px;
+    }
+
+    .sources a { color: var(--night); text-decoration: underline dotted; }
+
+    footer {
+      text-align: center;
+      padding: 32px 24px 48px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    footer .signature {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      color: var(--lilac);
+    }
+
+    /* In-page TOC */
+    nav.toc {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(246,244,238,0.15);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-top: 32px;
+      display: inline-block;
+    }
+
+    nav.toc strong {
+      color: var(--moon);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    nav.toc a {
+      color: var(--paper);
+      text-decoration: none;
+      margin-right: 14px;
+      font-size: 0.92rem;
+      border-bottom: 1px dashed transparent;
+    }
+
+    nav.toc a:hover { border-bottom-color: var(--moon); }
+  </style>
+</head>
+<body>
+
+<header class="skyline">
+  <div class="moon" aria-hidden="true"></div>
+  <div class="container">
+    <span class="eyebrow">📓 Der Träumer · Folge 1</span>
+    <h1>Jinja Templates,<br/>verträumt erklärt.</h1>
+    <p class="lead">
+      Stell dir vor, deine Webseite ist ein Brief, den du <em>zigtausendfach</em> verschicken willst —
+      aber jeder Empfänger kriegt einen anderen Namen, anderen Preis, andere Wetterdaten.
+      Jinja ist die Schreibmaschine, die für jeden Empfänger den Brief frisch ausspuckt.
+      Heute lernen wir die vier Konzepte, die zusammen Jinja <em>wirklich</em> ausmachen.
+    </p>
+    <nav class="toc" aria-label="Inhaltsverzeichnis">
+      <strong>Heute auf der Reise</strong>
+      <a href="#concept-1">1 · Vererbung</a>
+      <a href="#concept-2">2 · Filter &amp; Macros</a>
+      <a href="#concept-3">3 · Kontext &amp; Scope</a>
+      <a href="#concept-4">4 · Autoescape &amp; SSTI</a>
+      <a href="#exercises">Übungen</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="container">
+
+  <!-- INTRO -->
+  <section class="card intro">
+    <h2>Was ist Jinja eigentlich?</h2>
+    <p>
+      <strong>Jinja</strong> (genauer: Jinja2 / Jinja3) ist eine <strong>Template-Engine für Python</strong>, geschrieben vom Pallets-Team (denselben Leuten, die Flask gebaut haben).
+      Sie ist die Standard-Engine in <strong>Flask</strong>, im Fundament von <strong>Ansible</strong>, <strong>Salt</strong>, <strong>FastAPI</strong>-Beispielen, der <strong>Hugging Face</strong> Chat-Templates und vielen mehr.
+    </p>
+    <p>
+      Eine Template-Engine macht eine sehr konkrete Sache: sie nimmt einen <em>Text mit Platzhaltern</em>
+      und einen <em>Datenbeutel</em> ("Kontext"), und spuckt fertigen Text aus. Klingt simpel — aber sobald
+      mehrere Seiten dasselbe Layout teilen, Daten formatiert werden müssen und Nutzer-Eingaben sicher
+      eingebaut werden sollen, brauchst du Vokabular. Genau das ist heute dran.
+    </p>
+
+    <h3>Die drei heiligen Klammern</h3>
+    <p>Jinja kennt genau drei Delimiter — alles andere ist normaler Text:</p>
+    <pre><code><span class="d">{{ ... }}</span>   <span class="c"># Ausdruck → wird zu Text gerendert</span>
+<span class="d">{% ... %}</span>   <span class="c"># Statement → if, for, set, extends, block, …</span>
+<span class="d">{# ... #}</span>   <span class="c"># Kommentar → erscheint NICHT im Output</span></code></pre>
+
+    <h3>Die vier verbundenen Konzepte</h3>
+    <p>Sie hängen zusammen wie eine Kette: ohne <em>Vererbung</em> wiederholst du dich; ohne <em>Filter &amp; Macros</em> wird die Vererbung schmutzig; ohne klares Verständnis von <em>Kontext &amp; Scope</em> verstehst du nicht, warum Variable X im Block plötzlich verschwunden ist; und ohne <em>Autoescape</em> baust du XSS-Lücken.</p>
+
+    <div class="web" aria-label="Konzept-Netz">
+      <div class="node"><span class="num">1</span><div class="name">Template Inheritance</div><div class="why">Skelett &amp; Knochen — die Seitenstruktur, die alle Kinder erben.</div></div>
+      <div class="node"><span class="num">2</span><div class="name">Filter &amp; Macros</div><div class="why">Stoff &amp; Schnitt — Daten transformieren, Bausteine wiederverwenden.</div></div>
+      <div class="node"><span class="num">3</span><div class="name">Kontext &amp; Scoping</div><div class="why">Adern — wo Variablen herkommen und wer sie sehen darf.</div></div>
+      <div class="node"><span class="num">4</span><div class="name">Autoescape &amp; SSTI</div><div class="why">Haut — was Nutzer-Input darf und was niemals.</div></div>
+    </div>
+  </section>
+
+  <!-- CONCEPT 1 -->
+  <section class="card" id="concept-1">
+    <h2><span class="concept-num">1</span>Template Inheritance</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Eine Bauzeichnung für ein Reihenhaus. Die <em>Statik</em> (Wände, Dach, Treppe) wird einmal gezeichnet — das ist deine <code>base.html</code>. Jedes Haus in der Reihe darf nur die <em>markierten Räume</em> umgestalten. Die Markierungen heißen <code>{% block %}</code>.
+    </div>
+
+    <h3>Der Eltern-Schnittmuster</h3>
+    <pre><code><span class="c">{# templates/base.html #}</span>
+&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;<span class="d">{% block title %}</span>Mein Blog<span class="d">{% endblock %}</span>&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;header&gt;<span class="d">{% block header %}</span>&lt;h1&gt;Willkommen!&lt;/h1&gt;<span class="d">{% endblock %}</span>&lt;/header&gt;
+    &lt;main&gt;<span class="d">{% block content required %}{% endblock %}</span>&lt;/main&gt;
+    &lt;footer&gt;© 2026&lt;/footer&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <h3>Das Kind-Template</h3>
+    <pre><code><span class="c">{# templates/article.html #}</span>
+<span class="d">{% extends "base.html" %}</span>
+
+<span class="d">{% block title %}</span>Artikel — <span class="d">{{ super() }}</span><span class="d">{% endblock %}</span>
+
+<span class="d">{% block content %}</span>
+  &lt;article&gt;
+    &lt;h2&gt;<span class="d">{{ post.title }}</span>&lt;/h2&gt;
+    &lt;p&gt;<span class="d">{{ post.body }}</span>&lt;/p&gt;
+  &lt;/article&gt;
+<span class="d">{% endblock %}</span></code></pre>
+
+    <h4>Was du gerade gesehen hast</h4>
+    <ul>
+      <li><code>{% extends "base.html" %}</code> muss das <strong>erste</strong> Tag sein. Das Kind kann <em>nur</em> Inhalte in Blöcken ändern — alles außerhalb wird ignoriert.</li>
+      <li><code>{{ super() }}</code> rendert den Eltern-Inhalt mitten in den Kind-Block. Im Beispiel oben wird der Title zu <code>Artikel — Mein Blog</code>.</li>
+      <li><code>{% block content required %}</code>: das Kind <strong>muss</strong> diesen Block überschreiben — sonst Fehler. Ein <code>required</code>-Block darf in der Eltern-Datei nur Whitespace und Kommentare enthalten.</li>
+    </ul>
+
+    <div class="truth"><strong>Fakt:</strong> Mehrstufige Vererbung ist erlaubt. Du kannst <code>page.html</code> → <code>section.html</code> → <code>base.html</code> erben. Jede Ebene darf weitere Blöcke definieren oder erben.</div>
+
+    <div class="pitfall"><strong>Stolperstein:</strong> Inhalt <em>vor</em> <code>{% extends %}</code> wird stillschweigend verworfen. Wenn dein Kind-Template HTML außerhalb von Blöcken hat, fehlt es im Output — kein Warnung, keine Fehlermeldung.</div>
+  </section>
+
+  <!-- CONCEPT 2 -->
+  <section class="card" id="concept-2">
+    <h2><span class="concept-num">2</span>Filter &amp; Macros</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Ein <em>Filter</em> ist ein Küchengerät — du wirfst eine Zutat rein, raus kommt eine andere Form (klein gehackt, gepresst, sortiert). Ein <em>Macro</em> ist ein Rezept — du rufst es mit Zutaten auf, und es liefert dir ein fertiges Bauteil zurück. Filter transformieren <em>Daten</em>; Macros produzieren <em>Markup</em>.
+    </div>
+
+    <h3>Filter — die Pipe-Operator-Familie</h3>
+    <pre><code><span class="d">{{ name|upper }}</span>                          <span class="c">→ ALICE</span>
+<span class="d">{{ users|length }}</span>                        <span class="c">→ 3</span>
+<span class="d">{{ price|round(2) }}</span>                      <span class="c">→ 9.99</span>
+<span class="d">{{ tags|join(', ') }}</span>                     <span class="c">→ "python, flask, jinja"</span>
+<span class="d">{{ value|default('—') }}</span>                  <span class="c">→ Fallback wenn undefined</span>
+<span class="d">{{ posts|sort(attribute='date', reverse=true) }}</span>
+<span class="d">{{ user.bio|truncate(80) }}</span>                <span class="c">→ schneidet bei 80 Zeichen</span></code></pre>
+    <p>Filter lassen sich <strong>verketten</strong> (Output von links wird Input von rechts):</p>
+    <pre><code><span class="d">{{ name|trim|lower|replace(' ', '-') }}</span>     <span class="c">→ "max-mustermann"</span></code></pre>
+
+    <h3>Eigene Filter (in Flask)</h3>
+    <pre><code><span class="c"># app.py</span>
+<span class="k">@app</span>.template_filter(<span class="s">'reverse'</span>)
+<span class="k">def</span> reverse_filter(s):
+    <span class="k">return</span> s[::-<span class="v">1</span>]</code></pre>
+    <p>Im Template einfach <code>{{ "Hallo"|reverse }}</code> → <code>ollaH</code>. Alternativ ohne Decorator: <code>app.jinja_env.filters['reverse'] = reverse_filter</code>.</p>
+
+    <h3>Macros — wiederverwendbare Markup-Funktionen</h3>
+    <pre><code><span class="c">{# _forms.html #}</span>
+<span class="d">{% macro input(name, value='', type='text', size=20) -%}</span>
+  &lt;input type=<span class="s">"<span class="d">{{ type }}</span>"</span>
+         name=<span class="s">"<span class="d">{{ name }}</span>"</span>
+         value=<span class="s">"<span class="d">{{ value|e }}</span>"</span>
+         size=<span class="s">"<span class="d">{{ size }}</span>"</span>&gt;
+<span class="d">{%- endmacro %}</span></code></pre>
+    <p>Aufruf wie eine Funktion:</p>
+    <pre><code><span class="d">{{ input('username') }}</span>
+<span class="d">{{ input('email', type='email') }}</span>
+<span class="d">{{ input('age', type='number', size=4) }}</span></code></pre>
+    <p>Die <code>-</code>Zeichen in <code>{%- ... -%}</code> killen umliegenden Whitespace — wichtig wenn Einrückung wichtig ist.</p>
+
+    <h3>Macros aus anderen Dateien importieren</h3>
+    <pre><code><span class="d">{% import '_forms.html' as forms %}</span>
+<span class="d">{{ forms.input('username') }}</span>
+
+<span class="c">{# Oder gezielt einzelne Macros: #}</span>
+<span class="d">{% from '_forms.html' import input, textarea %}</span></code></pre>
+
+    <h3>Das <code>{% call %}</code>-Pattern: Macros mit Inhalt</h3>
+    <p>Manchmal willst du einen Macro mit <em>Block-Inhalt</em> aufrufen — wie einen Component-Slot. Dafür gibt's <code>caller()</code>:</p>
+    <pre><code><span class="d">{% macro card(title) %}</span>
+  &lt;div class=<span class="s">"card"</span>&gt;
+    &lt;h3&gt;<span class="d">{{ title }}</span>&lt;/h3&gt;
+    &lt;div class=<span class="s">"body"</span>&gt;<span class="d">{{ caller() }}</span>&lt;/div&gt;
+  &lt;/div&gt;
+<span class="d">{% endmacro %}</span>
+
+<span class="d">{% call card('Hallo') %}</span>
+  &lt;p&gt;Inhalt vom Aufrufer steht hier.&lt;/p&gt;
+<span class="d">{% endcall %}</span></code></pre>
+
+    <div class="truth"><strong>Fakt:</strong> Innerhalb eines Macros gibt es drei magische Variablen: <code>varargs</code> (extra positionale Args), <code>kwargs</code> (extra Keyword-Args), und <code>caller</code> (der Inhalt aus dem <code>{% call %}</code>-Block, falls einer da war).</div>
+  </section>
+
+  <!-- CONCEPT 3 -->
+  <section class="card" id="concept-3">
+    <h2><span class="concept-num">3</span>Kontext &amp; Variable Scoping</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Stell dir das Template als eine Bühne vor. Der <em>Kontext</em> ist die Truppe Schauspieler hinter dem Vorhang — Python schickt sie rein. Aber: nicht jeder Schauspieler darf auf jede Bühne. Manche Bühnen (Blocks, Macros) haben <em>Backstage-Türen</em>, die du explizit öffnen musst.
+    </div>
+
+    <h3>Wie Daten reinkommen</h3>
+    <pre><code><span class="c"># Pures Jinja2</span>
+<span class="k">from</span> jinja2 <span class="k">import</span> Environment, FileSystemLoader
+env = Environment(loader=FileSystemLoader(<span class="s">'templates'</span>))
+template = env.get_template(<span class="s">'hello.html'</span>)
+output = template.render(name=<span class="s">'Alice'</span>, items=[<span class="v">1</span>, <span class="v">2</span>, <span class="v">3</span>])
+
+<span class="c"># In Flask</span>
+<span class="k">from</span> flask <span class="k">import</span> render_template
+<span class="k">return</span> render_template(<span class="s">'hello.html'</span>, name=<span class="s">'Alice'</span>, items=[<span class="v">1</span>, <span class="v">2</span>, <span class="v">3</span>])</code></pre>
+
+    <h3>Lokale Variablen mit <code>{% set %}</code></h3>
+    <pre><code><span class="d">{% set total = items|sum %}</span>
+&lt;p&gt;Summe: <span class="d">{{ total }}</span>&lt;/p&gt;
+
+<span class="c">{# Block-set für Multi-line: #}</span>
+<span class="d">{% set greeting %}</span>Hallo, <span class="d">{{ name }}</span>!<span class="d">{% endset %}</span></code></pre>
+
+    <h3>Loop-Variablen — die ganze Familie</h3>
+    <p>Innerhalb von <code>{% for %}</code> stellt Jinja diese Variablen bereit:</p>
+    <pre><code><span class="d">{% for user in users %}</span>
+  <span class="d">{{ loop.index }}</span>     <span class="c">→ 1, 2, 3, …  (1-basiert)</span>
+  <span class="d">{{ loop.index0 }}</span>    <span class="c">→ 0, 1, 2, …  (0-basiert)</span>
+  <span class="d">{{ loop.revindex }}</span>  <span class="c">→ rückwärts gezählt (1-basiert)</span>
+  <span class="d">{{ loop.revindex0 }}</span> <span class="c">→ rückwärts (0-basiert)</span>
+  <span class="d">{{ loop.first }}</span>     <span class="c">→ True bei erstem Element</span>
+  <span class="d">{{ loop.last }}</span>      <span class="c">→ True bei letztem Element</span>
+  <span class="d">{{ loop.length }}</span>    <span class="c">→ Anzahl der Items</span>
+  <span class="d">{{ loop.previtem }}</span>  <span class="c">→ vorheriges Item (oder undefined)</span>
+  <span class="d">{{ loop.nextitem }}</span>  <span class="c">→ nächstes Item (oder undefined)</span>
+  <span class="d">{{ loop.depth }}</span>     <span class="c">→ rekursive Tiefe (1-basiert)</span>
+  <span class="d">{{ loop.depth0 }}</span>    <span class="c">→ rekursive Tiefe (0-basiert)</span>
+  <span class="d">{{ loop.cycle('a','b') }}</span>  <span class="c">→ zyklisch a, b, a, b, …</span>
+  <span class="d">{{ loop.changed(value) }}</span> <span class="c">→ True wenn sich value seit letztem Aufruf geändert hat</span>
+<span class="d">{% endfor %}</span></code></pre>
+
+    <h3>Das große Block-Scoping-Geheimnis</h3>
+    <p>Die größte Stolperfalle in Jinja:</p>
+    <pre><code><span class="d">{% for item in items %}</span>
+  <span class="d">{% block list_item %}</span>
+    <span class="d">{{ item }}</span>   <span class="c">← FUNKTIONIERT NICHT! `item` ist hier undefined.</span>
+  <span class="d">{% endblock %}</span>
+<span class="d">{% endfor %}</span></code></pre>
+    <p>Warum? Weil ein <code>{% block %}</code> standardmäßig <strong>nicht auf Variablen außerhalb des Blocks zugreifen kann</strong>. Das ist Absicht: Kind-Templates sollen den Block überschreiben können, ohne plötzlich an äußere Variablen gebunden zu sein. Lösung: das <code>scoped</code>-Schlüsselwort:</p>
+    <pre><code><span class="d">{% for item in items %}</span>
+  <span class="d">{% block list_item scoped %}</span>
+    <span class="d">{{ item }}</span>   <span class="c">✓ jetzt sichtbar</span>
+  <span class="d">{% endblock %}</span>
+<span class="d">{% endfor %}</span></code></pre>
+
+    <h3>Importieren mit Kontext</h3>
+    <p>Wenn du Macros in eine separate Datei auslagerst, kennen sie standardmäßig den Kontext der aufrufenden Seite <strong>nicht</strong> (Performance-Optimierung). In Flask sind <code>request</code>, <code>session</code>, <code>g</code> in importierten Templates auch nicht da — es sei denn du sagst:</p>
+    <pre><code><span class="d">{% from '_helpers.html' import nav_link with context %}</span></code></pre>
+
+    <h3>Flask-Kontext: was du immer hast</h3>
+    <p>Flask injiziert standardmäßig in jedes über <code>render_template()</code> gerenderte Template:</p>
+    <ul>
+      <li><code>config</code> — die Flask-Config (z. B. <code>config['SECRET_KEY']</code>)</li>
+      <li><code>request</code> — das aktuelle Request-Objekt</li>
+      <li><code>session</code> — die Session</li>
+      <li><code>g</code> — der request-gebundene Globals-Speicher</li>
+      <li><code>url_for()</code> — Routen-Reverse-Lookup</li>
+      <li><code>get_flashed_messages()</code> — flash messages abrufen</li>
+    </ul>
+    <p>Eigene globale Variablen für jedes Template hinzufügen mit <strong>Context Processors</strong>:</p>
+    <pre><code><span class="k">@app</span>.context_processor
+<span class="k">def</span> inject_user():
+    <span class="k">return</span> dict(current_user=g.user, year=<span class="v">2026</span>)</code></pre>
+    <p>Jetzt sind <code>current_user</code> und <code>year</code> in <em>jedem</em> Template verfügbar.</p>
+
+    <div class="pitfall"><strong>Stolperstein:</strong> <code>request</code>, <code>session</code>, <code>g</code> sind nur verfügbar, wenn ein <em>aktiver Request-Context</em> läuft. Beim Rendern aus einem Hintergrund-Job (ohne Request) sind sie weg — und dein Template crasht mit <code>RuntimeError</code>.</div>
+  </section>
+
+  <!-- CONCEPT 4 -->
+  <section class="card" id="concept-4">
+    <h2><span class="concept-num">4</span>Autoescape &amp; SSTI</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Dein Template ist ein offenes Fenster. Autoescape ist das Fliegengitter: Mücken (<code>&lt;script&gt;</code>-Tags von bösen Nutzern) bleiben draußen. Server-Side Template Injection ist der Albtraum: jemand reißt das ganze Fenster aus dem Rahmen — denn dein Code hat dem Angreifer erlaubt, die <em>Template-Sprache selbst</em> zu schreiben.
+    </div>
+
+    <h3>Was bedeutet "Escapen"?</h3>
+    <p>Wenn ein Nutzer als Username <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> einträgt und du es ungeschützt ins Template schreibst, läuft das Script im Browser jedes Besuchers. <strong>Autoescape</strong> ersetzt automatisch:</p>
+    <pre><code>&amp;  →  &amp;amp;
+&lt;  →  &amp;lt;
+&gt;  →  &amp;gt;
+"  →  &amp;quot;
+'  →  &amp;#x27;</code></pre>
+    <p>So wird aus <code>&lt;script&gt;…&lt;/script&gt;</code> harmloser Text auf der Seite statt ausgeführter Code.</p>
+
+    <h3>Default-Verhalten — und der gefährliche Unterschied</h3>
+    <div class="truth"><strong>Pures Jinja2:</strong> Autoescape ist <strong>standardmäßig AUS</strong>. Du musst es explizit anschalten:</div>
+    <pre><code><span class="k">from</span> jinja2 <span class="k">import</span> Environment, FileSystemLoader, select_autoescape
+
+env = Environment(
+    loader=FileSystemLoader(<span class="s">'templates'</span>),
+    autoescape=select_autoescape([<span class="s">'html'</span>, <span class="s">'xml'</span>])
+)</code></pre>
+    <div class="truth"><strong>Flask:</strong> Autoescape ist <strong>automatisch AN</strong> bei Templates mit Endungen <code>.html</code>, <code>.htm</code>, <code>.xml</code>, <code>.xhtml</code> und <code>.svg</code>, wenn du <code>render_template()</code> benutzt. Bei <code>render_template_string()</code> ist es <strong>für alle Strings</strong> an.</div>
+
+    <h3>Die <code>|safe</code>-Falle</h3>
+    <p>Wenn du <em>weißt</em>, dass HTML im Wert sicher ist (z. B. weil eine Markdown-Library ihn produziert hat), kannst du Autoescape gezielt abschalten:</p>
+    <pre><code><span class="d">{{ markdown_html|safe }}</span></code></pre>
+    <p>Innerhalb eines ganzen Blocks:</p>
+    <pre><code><span class="d">{% autoescape false %}</span>
+  &lt;p&gt;<span class="d">{{ trusted_html }}</span>&lt;/p&gt;
+<span class="d">{% endautoescape %}</span></code></pre>
+    <div class="pitfall"><strong>Goldene Regel:</strong> <code>|safe</code> auf <em>irgendetwas</em> aus Nutzer-Eingabe ist eine XSS-Lücke. Punkt. Wenn du es benutzen <em>musst</em>, lass die Quelle vorher durch eine Sanitizer-Library wie <code>bleach</code> laufen.</div>
+
+    <h3>Server-Side Template Injection (SSTI)</h3>
+    <p>Das ist der richtig große Hammer. SSTI passiert, wenn der Angreifer nicht nur <em>Daten</em> ins Template einbringt — sondern den <em>Template-Quelltext selbst</em>. Beispiel mit dem klassischen Anti-Pattern:</p>
+    <pre><code><span class="c"># GEFÄHRLICH — niemals so machen!</span>
+<span class="k">@app</span>.route(<span class="s">'/hello'</span>)
+<span class="k">def</span> hello():
+    name = request.args.get(<span class="s">'name'</span>)
+    <span class="k">return</span> render_template_string(<span class="s">f'Hallo {name}!'</span>)   <span class="c"># ← f-string baut Template-Quelle aus User-Input</span></code></pre>
+    <p>Ein Angreifer ruft <code>?name=<span style="color:#a04050">&#123;&#123;7*7&#125;&#125;</span></code> auf und sieht <code>Hallo 49!</code>. Das ist die Probe — und ab hier steht die ganze Python-Objektkette offen. Über <code>__class__</code>, <code>__mro__</code>, <code>__subclasses__()</code> kann ein Angreifer Code ausführen, Dateien lesen, in vielen Fällen den ganzen Server übernehmen.</p>
+
+    <h3>Die einzig richtige Lösung</h3>
+    <pre><code><span class="c"># SICHER — User-Input nur als Kontext, niemals als Template-Quelle</span>
+<span class="k">@app</span>.route(<span class="s">'/hello'</span>)
+<span class="k">def</span> hello():
+    name = request.args.get(<span class="s">'name'</span>)
+    <span class="k">return</span> render_template(<span class="s">'hello.html'</span>, name=name)
+    <span class="c"># In hello.html: Hallo {{ name }}!  → bei Autoescape harmlos.</span></code></pre>
+
+    <h3>Wenn du <em>wirklich</em> User-Templates ausführen musst</h3>
+    <p>Manchmal will man Power-Usern erlauben, eigene Templates zu schreiben (z. B. für E-Mail-Vorlagen). Dann gibt es <code>jinja2.sandbox.SandboxedEnvironment</code>:</p>
+    <pre><code><span class="k">from</span> jinja2.sandbox <span class="k">import</span> SandboxedEnvironment
+
+env = SandboxedEnvironment()
+template = env.from_string(user_supplied_template)
+output = template.render(name=name)</code></pre>
+    <p>Die Sandbox blockiert Zugriff auf gefährliche Attribute wie <code>__class__</code>, <code>__mro__</code> usw. Es gibt auch <code>ImmutableSandboxedEnvironment</code>, das zusätzlich Mutationen an <code>list</code>, <code>set</code>, <code>dict</code> verbietet. Aber: Sandboxes sind in der Geschichte mehrfach umgangen worden — je weniger Funktionalität du Nutzern gibst, desto besser.</p>
+
+    <div class="pitfall"><strong>Merksatz:</strong> Trenne <em>Template</em> (Code, von dir geschrieben) und <em>Kontext</em> (Daten, aus User-Input). Vermische nie beides. Wenn du das Wort "f-string" und "render_template" im selben Atemzug sagst, mach eine Pause und überlege noch mal.</div>
+  </section>
+
+  <!-- EXERCISES -->
+  <section class="card" id="exercises">
+    <h2>🎯 Übungen — Hände dreckig machen</h2>
+    <p>Setup-Empfehlung: ein Mini-Flask-App in einer einzigen Datei. Installation: <code>pip install Flask</code>.</p>
+
+    <pre><code><span class="c"># app.py — dein Spielplatz</span>
+<span class="k">from</span> flask <span class="k">import</span> Flask, render_template, render_template_string, request
+app = Flask(__name__)
+
+<span class="k">@app</span>.route(<span class="s">'/'</span>)
+<span class="k">def</span> index():
+    <span class="k">return</span> render_template(<span class="s">'index.html'</span>, name=<span class="s">'Welt'</span>)
+
+<span class="k">if</span> __name__ == <span class="s">'__main__'</span>:
+    app.run(debug=<span class="v">True</span>)</code></pre>
+    <p>Lege dann <code>templates/index.html</code> an und beginne mit Übung 1.</p>
+
+    <details class="exercise">
+      <summary>Übung 1 · "Hello name" mit Filter <span class="level-pill easy">Einsteiger</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Schreibe ein Template <code>index.html</code>, das <code>{{ name }}</code> anzeigt — <em>aber</em> immer in Großbuchstaben, mit drei Ausrufezeichen am Ende, und falls <code>name</code> leer ist, soll "Anonym" stehen.</p>
+        <p><strong>Tipp:</strong> Du brauchst die Filter <code>upper</code>, <code>default</code>, und Verkettung mit String-Konkatenation oder <code>~</code> (Jinja's String-Concat-Operator).</p>
+        <p><strong>Lösung:</strong></p>
+        <pre><code>&lt;p&gt;Hallo, <span class="d">{{ (name|default('Anonym', true))|upper }}</span>!!!&lt;/p&gt;</code></pre>
+        <p><em>Warum <code>true</code> als zweites Argument?</em> Damit <code>default</code> auch bei <em>leeren Strings</em> greift, nicht nur bei <code>undefined</code>.</p>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 2 · Vererbung mit <code>super()</code> <span class="level-pill easy">Einsteiger</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Lege <code>base.html</code> mit Title-Block <code>"Mein Blog"</code> an. Lege <code>article.html</code> an, das den Title zu <code>"Artikel-Titel · Mein Blog"</code> erweitert — wobei <code>"Mein Blog"</code> aus dem Eltern-Template kommt, nicht hartkodiert.</p>
+        <p><strong>Lösung:</strong></p>
+        <pre><code><span class="c">{# base.html #}</span>
+&lt;title&gt;<span class="d">{% block title %}</span>Mein Blog<span class="d">{% endblock %}</span>&lt;/title&gt;
+
+<span class="c">{# article.html #}</span>
+<span class="d">{% extends "base.html" %}</span>
+<span class="d">{% block title %}</span><span class="d">{{ post.title }}</span> · <span class="d">{{ super() }}</span><span class="d">{% endblock %}</span></code></pre>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 3 · Macro mit <code>caller()</code> <span class="level-pill med">Mittel</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Schreibe ein Macro <code>alert(level)</code>, das eine Box mit einer der CSS-Klassen <code>alert-info</code>, <code>alert-warn</code>, <code>alert-error</code> rendert. Der Inhalt der Box soll vom Aufrufer kommen.</p>
+        <p><strong>Lösung:</strong></p>
+        <pre><code><span class="d">{% macro alert(level='info') %}</span>
+  &lt;div class=<span class="s">"alert alert-<span class="d">{{ level }}</span>"</span>&gt;
+    <span class="d">{{ caller() }}</span>
+  &lt;/div&gt;
+<span class="d">{% endmacro %}</span>
+
+<span class="d">{% call alert('warn') %}</span>
+  &lt;strong&gt;Achtung!&lt;/strong&gt; Dein Token läuft bald ab.
+<span class="d">{% endcall %}</span></code></pre>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 4 · Loop-Magie: Trenner zwischen Items <span class="level-pill med">Mittel</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Gegeben <code>tags = ['python', 'web', 'jinja']</code>, gib aus: <code>python, web, jinja.</code> — also Komma zwischen Items, Punkt am Ende.</p>
+        <p><strong>Lösung A (Loop-Variable):</strong></p>
+        <pre><code><span class="d">{% for tag in tags %}</span><span class="d">{{ tag }}</span><span class="d">{% if not loop.last %}</span>, <span class="d">{% else %}</span>.<span class="d">{% endif %}</span><span class="d">{% endfor %}</span></code></pre>
+        <p><strong>Lösung B (eleganter, mit <code>join</code>):</strong></p>
+        <pre><code><span class="d">{{ tags|join(', ') }}</span>.</code></pre>
+        <p>Lektion: Loop-Variablen sind mächtig, aber der richtige Filter ist oft kürzer.</p>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 5 · Block-Scoping verstanden? <span class="level-pill med">Mittel</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Folgender Code crasht. Warum? Repariere ihn mit einer einzigen zusätzlichen Code-Vokabel.</p>
+        <pre><code><span class="d">{% for product in products %}</span>
+  <span class="d">{% block product_card %}</span>
+    &lt;h3&gt;<span class="d">{{ product.name }}</span>&lt;/h3&gt;
+  <span class="d">{% endblock %}</span>
+<span class="d">{% endfor %}</span></code></pre>
+        <p><strong>Lösung:</strong> Das Wort <code>scoped</code> hinter den Block-Namen — Blocks haben standardmäßig keinen Zugriff auf äußere Variablen wie die Loop-Variable <code>product</code>.</p>
+        <pre><code><span class="d">{% block product_card scoped %}</span></code></pre>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 6 · XSS-Detektiv <span class="level-pill hard">Fortgeschritten</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Du erbst diesen Flask-Code. Finde zwei Sicherheitslücken — eine offensichtlich, eine subtil.</p>
+        <pre><code><span class="k">@app</span>.route(<span class="s">'/profile'</span>)
+<span class="k">def</span> profile():
+    bio = request.args.get(<span class="s">'bio'</span>, <span class="s">''</span>)
+    <span class="k">return</span> render_template_string(
+        <span class="s">'&lt;h1&gt;Hallo {{ name }}&lt;/h1&gt;&lt;div&gt;'</span> + bio + <span class="s">'&lt;/div&gt;'</span>,
+        name=request.args.get(<span class="s">'name'</span>)
+    )</code></pre>
+        <p><strong>Lösung:</strong></p>
+        <ol>
+          <li><strong>SSTI</strong> (offensichtlich): <code>bio</code> wird per String-Konkatenation in die <em>Template-Quelle</em> eingebaut. <code>?bio={{7*7}}</code> würde ausgewertet. Fix: schreib das Template in eine Datei und gib <code>bio</code> als Kontext-Variable.</li>
+          <li><strong>Subtil:</strong> Selbst wenn <code>bio</code> als Kontext käme: <code>render_template_string</code> autoescaped zwar standardmäßig, aber das macht aus <code>bio</code> noch keine "sichere" Variable — wenn jemand später ein <code>|safe</code> dranhängt, ist die Lücke wieder offen. Außerdem: bei <code>render_template_string</code> ist Autoescape immer für <em>alle</em> Strings an, anders als bei <code>render_template</code>, das nach Dateiendung entscheidet — wenn du das vermischst, kann eine Migration zu <code>render_template</code> mit einem <code>.txt</code>-Template plötzlich Autoescape verlieren.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 7 · Eigener Filter <span class="level-pill hard">Fortgeschritten</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Schreibe einen Filter <code>moneyize</code>, der eine Zahl zu deutschem Währungsformat macht: <code>1234.5</code> → <code>"1.234,50 €"</code>.</p>
+        <p><strong>Lösung:</strong></p>
+        <pre><code><span class="k">@app</span>.template_filter(<span class="s">'moneyize'</span>)
+<span class="k">def</span> moneyize(value):
+    <span class="k">try</span>:
+        n = <span class="k">float</span>(value)
+    <span class="k">except</span> (<span class="k">TypeError</span>, <span class="k">ValueError</span>):
+        <span class="k">return</span> value
+    formatted = <span class="k">f</span><span class="s">"{n:,.2f}"</span>.replace(<span class="s">","</span>, <span class="s">"X"</span>).replace(<span class="s">"."</span>, <span class="s">","</span>).replace(<span class="s">"X"</span>, <span class="s">"."</span>)
+    <span class="k">return</span> <span class="k">f</span><span class="s">"{formatted} €"</span></code></pre>
+        <p>Im Template: <code>{{ price|moneyize }}</code>.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>🌙 Stuck? Idee? Eine Übung fehlt?</h2>
+    <p>
+      Der Träumer hat sieben Übungen mitgebracht — wenn du eine andere brauchst, einen Fehler entdeckst,
+      oder ein Konzept tiefer beleuchtet haben willst: mach ein GitHub Issue auf. Wir bauen das hier zusammen.
+    </p>
+    <a class="btn" href="https://github.com/JereIsThere/claude-learnings/issues/new?title=%5BJinja%5D+&labels=jinja-templates" target="_blank" rel="noopener">
+      ✨ Übung anfordern / Issue öffnen
+    </a>
+    <a class="btn secondary" href="https://github.com/JereIsThere/claude-learnings/issues?q=label%3Ajinja-templates" target="_blank" rel="noopener">
+      Bestehende Issues
+    </a>
+    <p class="sources">
+      <strong>Quellen (alle Fakten gegen offizielle Docs verifiziert):</strong><br/>
+      <a href="https://jinja.palletsprojects.com/en/stable/templates/" target="_blank" rel="noopener">Jinja Template Designer Documentation</a> ·
+      <a href="https://jinja.palletsprojects.com/en/stable/sandbox/" target="_blank" rel="noopener">Jinja Sandbox</a> ·
+      <a href="https://flask.palletsprojects.com/en/stable/templating/" target="_blank" rel="noopener">Flask Templates</a> ·
+      <a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/18-Testing_for_Server-side_Template_Injection" target="_blank" rel="noopener">OWASP SSTI</a>
+    </p>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <p class="signature">— Der Träumer 🌙</p>
+  <p style="margin-top: 6px;">Lernen passiert nicht beim Lesen. Lernen passiert beim Tippen. Mach <code>pip install Flask</code> und fang an.</p>
+</footer>
+
+</body>
+</html>
