@@ -45,3 +45,7 @@ wheels/
 *.fdb_latexmk
 *.synctex.gz
 *.toc
+
+# Claude Code (per-machine state — not for sharing)
+.claude/settings.local.json
+.claude/worktrees/
