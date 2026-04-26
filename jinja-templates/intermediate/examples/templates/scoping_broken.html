@@ -1,0 +1,21 @@
+{# KAPUTTES BEISPIEL — zum Vergleich, NICHT für Produktion.
+
+   Innerhalb eines {% block %} sind Variablen aus dem äußeren {% for %} per
+   Default NICHT sichtbar. `item` ist hier `undefined` und wird zu leerem
+   String — keine Fehlermeldung, einfach leerer Output. #}
+
+<!doctype html>
+<html lang="de">
+  <head><title>Scope (broken)</title></head>
+  <body>
+    <h1>Block ohne <code>scoped</code> — Items fehlen</h1>
+    <ul>
+      {% for item in items %}
+        {% block list_item %}
+          <li>{{ item }}</li>   {# ← bleibt leer! #}
+        {% endblock %}
+      {% endfor %}
+    </ul>
+    <p>Vergleiche mit <a href="scoping_fixed.html">scoping_fixed.html</a>.</p>
+  </body>
+</html>

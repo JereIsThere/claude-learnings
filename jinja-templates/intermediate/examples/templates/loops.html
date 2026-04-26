@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de">
+  <head><title>Loop-Variablen · {{ site_name }}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+    .first { background: #e8f3ec; }
+    .last { background: #fce8ec; }
+    .cat-divider { font-weight: bold; padding-top: 16px; }
+  </style>
+  </head>
+  <body>
+    <h1>loop.* in Aktion</h1>
+
+    <h2>1. Trenner zwischen Items: <code>loop.last</code></h2>
+    <p>
+      {% for product in products -%}
+        {{ product.name }}{% if not loop.last %}, {% else %}.{% endif %}
+      {%- endfor %}
+    </p>
+
+    <h2>2. Komplette Tabelle mit allen Loop-Vars</h2>
+    <table>
+      <tr>
+        <th>index</th><th>index0</th><th>revindex</th>
+        <th>first</th><th>last</th><th>length</th>
+        <th>name</th><th>previtem</th>
+      </tr>
+      {% for product in products %}
+        <tr class="{% if loop.first %}first{% elif loop.last %}last{% endif %}">
+          <td>{{ loop.index }}</td>
+          <td>{{ loop.index0 }}</td>
+          <td>{{ loop.revindex }}</td>
+          <td>{{ loop.first }}</td>
+          <td>{{ loop.last }}</td>
+          <td>{{ loop.length }}</td>
+          <td>{{ product.name }}</td>
+          <td>{{ loop.previtem.name if loop.previtem is defined else '—' }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+
+    <h2>3. <code>loop.changed()</code>: Kategorie-Header automatisch</h2>
+    <ul>
+      {% for product in products %}
+        {% if loop.changed(product.category) %}
+          <li class="cat-divider">— {{ product.category }} —</li>
+        {% endif %}
+        <li>{{ product.name }}</li>
+      {% endfor %}
+    </ul>
+
+    <h2>4. <code>loop.cycle()</code>: Zebra-Streifen</h2>
+    <ul>
+      {% for product in products %}
+        <li style="background: {{ loop.cycle('#fff', '#f5f5f5') }};">
+          {{ product.name }}
+        </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+{# Macro-Bibliothek. Wird mit {% from "_forms.html" import input, field %} importiert. #}
+
+{% macro input(name, value='', type='text', placeholder='', size=20) -%}
+  <input type="{{ type }}"
+         name="{{ name }}"
+         value="{{ value|e }}"
+         placeholder="{{ placeholder|e }}"
+         size="{{ size }}">
+{%- endmacro %}
+
+
+{% macro field(label, name, type='text', value='') -%}
+  <div class="field">
+    <label for="{{ name }}">{{ label }}</label>
+    {{ input(name, value=value, type=type) }}
+  </div>
+{%- endmacro %}
+
+
+{# Ein Macro mit caller() — der Aufrufer liefert den Inhalt #}
+{% macro card(title) -%}
+  <div class="card">
+    <h3>{{ title }}</h3>
+    <div class="card-body">{{ caller() }}</div>
+  </div>
+{%- endmacro %}
