@@ -1,0 +1,25 @@
+{# `with context` damit das Macro `site_name` aus dem Context-Processor sieht.
+   Ohne `with context` wären die Variablen NICHT verfügbar. #}
+{% from "_forms.html" import field, card with context %}
+
+<!doctype html>
+<html lang="de">
+  <head><title>Kontakt · {{ site_name }}</title></head>
+  <body>
+    <h1>Kontakt — {{ site_name }} ({{ current_year }})</h1>
+
+    <p>Bestellwert-Beispiel: {{ price|moneyize }}</p>
+    <p>Slogan: {{ "der träumer wünscht einen guten tag"|shouty }}</p>
+
+    <form>
+      {{ field("Name", "name") }}
+      {{ field("E-Mail", "email", type="email") }}
+      {{ field("Alter", "age", type="number") }}
+    </form>
+
+    {% call card("Hinweis") %}
+      <p>Dieser Inhalt kommt vom <strong>Aufrufer</strong>, nicht aus dem Macro selbst.</p>
+      <p>Das ist das <code>caller()</code>-Pattern.</p>
+    {% endcall %}
+  </body>
+</html>

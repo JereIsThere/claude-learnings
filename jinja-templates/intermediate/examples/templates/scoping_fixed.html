@@ -1,0 +1,18 @@
+{# REPARIERT — das Schlüsselwort `scoped` öffnet dem Block den Zugriff
+   auf die Loop-Variable `item`. #}
+
+<!doctype html>
+<html lang="de">
+  <head><title>Scope (fixed) · {{ site_name }}</title></head>
+  <body>
+    <h1>Block mit <code>scoped</code></h1>
+    <ul>
+      {% for item in items %}
+        {% block list_item scoped %}
+          <li>{{ loop.index }}. {{ item }}</li>
+        {% endblock %}
+      {% endfor %}
+    </ul>
+    <p>Vergleiche mit der ungeschützten Variante: <code>scoping_broken.html</code>.</p>
+  </body>
+</html>

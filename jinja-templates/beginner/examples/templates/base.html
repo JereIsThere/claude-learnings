@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Mein Blog{% endblock %}</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #1c1c2e; }
+      header { border-bottom: 1px solid #ccc; padding-bottom: 12px; margin-bottom: 24px; }
+      footer { color: #888; margin-top: 60px; font-size: 0.9rem; }
+    </style>
+  </head>
+  <body>
+    <header>
+      {% block header %}<h1>Mein Blog</h1>{% endblock %}
+    </header>
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+      {% block footer %}© 2026 — gebaut mit Flask + Jinja{% endblock %}
+    </footer>
+  </body>
+</html>
