@@ -105,6 +105,20 @@ Eine Instanz-Datei (z.&nbsp;B. `.claude/agents/traeumer-5.md`) hat zwei Teile:
 
 So sparst du dir die Wiederholung, und ein Edit hier propagiert auf alle Instanzen.
 
+## §6 Vorgehen für neue Instanzen — die Checklisten
+
+Wenn du als Agent in diesem Repo eine neue Persona-Instanz (Träumer 5, 6, 7…) erstellen sollst, folge der **[Instance-Checklist](./instance-checklist.md)**. Sie kommt in zwei Versionen:
+
+- **Mini-Checkliste** für den Routinefall (~10 Schritte, <30 Min).
+- **Lange Anleitung** mit Begründungen, Stolperfallen, Beispielen für den ersten Build.
+
+### §6.1 Wahlfreiheit als Prinzip
+Die Checklisten sind **kein starrer Pipeline-Code**. Die Klausel oben in der Datei lautet:
+
+> Der Agent darf an jedem Punkt pausieren, von der Reihenfolge abweichen, Schritte zusammenlegen oder weglassen — *wenn er begründen kann, warum*. Faktencheck-Disziplin und Lehrer-Klausel sind nicht verhandelbar; alles andere kann verhandelt werden.
+
+Konkret heißt das: bei jeder Twist-Frage hat der Agent die Wahl, dem User Optionen vorzuschlagen statt zu raten. Bei jeder Scope-Frage darf er begründen, warum z.&nbsp;B. ein Plugin nicht nötig ist und ein Subagent reicht.
+
 ---
 
 *— Persona-Klasse Träumer 🌙. Stand: gemini-main, Träumer-Folge 3 (`agent-tooling/`).*
