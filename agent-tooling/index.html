@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Tooling — der Träumer als Werkzeug</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --night: #0f1230;
+      --night-2: #1a1d4a;
+      --paper: #f6f4ee;
+      --ink: #1c1c2e;
+      --muted: #6b6883;
+      --moon: #f5d76e;
+      --lilac: #b39bd8;
+      --rose: #e8a4b8;
+      --mint: #7fc8a9;
+      --code-bg: #14152e;
+      --code-fg: #d8d8f0;
+      --code-accent: #f5d76e;
+      --radius: 16px;
+      --shadow: 0 12px 40px -16px rgba(15, 18, 48, 0.45);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    .skyline {
+      position: relative;
+      background:
+        radial-gradient(ellipse 60% 80% at 80% 10%, rgba(245,215,110,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 15% 30%, rgba(179,155,216,0.30) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(232,164,184,0.18) 0%, transparent 70%),
+        linear-gradient(180deg, var(--night) 0%, var(--night-2) 100%);
+      color: var(--paper);
+      padding: 96px 24px 120px;
+      overflow: hidden;
+    }
+    .skyline::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 12% 18%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 28% 70%, white 50%, transparent 51%),
+        radial-gradient(2px 2px at 62% 22%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 78% 55%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 88% 12%, white 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 40% 38%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 8% 80%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 92% 78%, white 50%, transparent 51%),
+        radial-gradient(2px 2px at 50% 86%, white 50%, transparent 51%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--moon);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .lead {
+      font-size: 1.2rem;
+      max-width: 620px;
+      color: rgba(246, 244, 238, 0.82);
+      font-weight: 300;
+    }
+
+    .moon {
+      position: absolute;
+      top: 60px;
+      right: 40px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff5d0 0%, #f5d76e 60%, #c89c2a 100%);
+      box-shadow: 0 0 60px 8px rgba(245,215,110,0.25);
+    }
+
+    @media (max-width: 640px) { .moon { width: 60px; height: 60px; top: 30px; right: 24px; } }
+
+    main {
+      padding: 0 24px 80px;
+      margin-top: -60px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(15,18,48,0.05);
+    }
+    .card.intro { background: linear-gradient(135deg, #fff 0%, #fdf9f0 100%); }
+
+    h2 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
+    }
+    h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      margin: 28px 0 10px;
+      color: var(--night);
+    }
+    h4 {
+      font-size: 0.85rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 22px 0 8px;
+      font-weight: 600;
+    }
+
+    p { margin-bottom: 14px; }
+    ul, ol { margin: 8px 0 14px 24px; }
+    li { margin-bottom: 4px; }
+
+    .concept-num {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--night);
+      color: var(--moon);
+      font-family: 'Fraunces', serif;
+      text-align: center;
+      line-height: 36px;
+      margin-right: 12px;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+
+    .vivid {
+      background: linear-gradient(90deg, rgba(179,155,216,0.18), rgba(232,164,184,0.18));
+      border-left: 3px solid var(--lilac);
+      padding: 14px 18px;
+      border-radius: 0 12px 12px 0;
+      margin: 16px 0 18px;
+      font-style: italic;
+      color: var(--night);
+    }
+    .vivid strong { font-style: normal; }
+
+    code, pre { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    code {
+      background: rgba(15,18,48,0.06);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 18px 22px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      margin: 12px 0 18px;
+    }
+    pre code { background: transparent; padding: 0; color: inherit; font-size: inherit; }
+    pre .c { color: #7c7ca3; font-style: italic; }
+    pre .k { color: var(--code-accent); }
+    pre .s { color: var(--mint); }
+    pre .v { color: var(--rose); }
+    pre .d { color: var(--lilac); font-weight: 500; }
+
+    .pitfall {
+      background: #fdf2f2;
+      border-left: 3px solid #d96666;
+      padding: 12px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+    .pitfall strong { color: #b94444; }
+
+    .truth {
+      background: #f0f7f3;
+      border-left: 3px solid var(--mint);
+      padding: 12px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+    .truth strong { color: #3d7a5b; }
+
+    .spec {
+      background: #f4f1fa;
+      border-left: 3px solid var(--lilac);
+      padding: 12px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .spec strong { color: #6b3da7; }
+    .spec a { color: #6b3da7; }
+
+    /* Schema-Tabelle */
+    table.schema {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 18px;
+      font-size: 0.9rem;
+    }
+    table.schema th, table.schema td {
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(15,18,48,0.08);
+    }
+    table.schema th {
+      background: rgba(179,155,216,0.12);
+      font-weight: 600;
+      color: var(--night);
+    }
+    table.schema td code { font-size: 0.85em; }
+    .req { color: #b94444; font-weight: 700; }
+    .opt { color: #6b6883; }
+
+    /* Standards-Landkarte */
+    .landmap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 24px 0 8px;
+    }
+    .landmap .layer {
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: var(--paper);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .landmap .layer .label {
+      font-family: 'Fraunces', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 6px;
+    }
+    .landmap .layer .name { font-weight: 600; margin-bottom: 4px; }
+    .landmap .layer .why { opacity: 0.78; font-size: 0.85rem; }
+
+    .landmap .a { background: var(--night); }
+    .landmap .b { background: #2d3163; }
+    .landmap .c { background: #4a3d6b; }
+    .landmap .d { background: #3d5066; }
+    .landmap .e { background: #6b3a4a; }
+    .landmap .f { background: #3a6b5a; }
+
+    @media (max-width: 720px) { .landmap { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .landmap { grid-template-columns: 1fr; } }
+
+    .web {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin: 24px 0 8px;
+    }
+    .web .node {
+      background: var(--night);
+      color: var(--paper);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .web .node .num {
+      color: var(--moon);
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    .web .node .name { font-weight: 600; margin-top: 4px; }
+    .web .node .why {
+      font-size: 0.88rem;
+      color: rgba(246,244,238,0.7);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+    @media (max-width: 540px) { .web { grid-template-columns: 1fr; } }
+
+    .flowdiag {
+      background: #faf8f3;
+      border: 1px solid rgba(15,18,48,0.08);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+
+    /* Vergleichstabelle 3-Wege */
+    table.compare {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      font-size: 0.92rem;
+    }
+    table.compare th, table.compare td {
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(15,18,48,0.08);
+    }
+    table.compare th {
+      background: var(--night);
+      color: var(--paper);
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+    }
+    table.compare tr:nth-child(even) { background: rgba(15,18,48,0.03); }
+
+    /* Exercises */
+    details.exercise {
+      background: #faf8f3;
+      border: 1px solid rgba(15,18,48,0.08);
+      border-radius: 12px;
+      padding: 16px 22px;
+      margin-bottom: 12px;
+    }
+    details.exercise[open] { background: #fffdf7; }
+    details.exercise summary {
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 0;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    details.exercise summary::-webkit-details-marker { display: none; }
+    details.exercise summary::before {
+      content: '▸';
+      color: var(--lilac);
+      transition: transform 0.2s;
+    }
+    details.exercise[open] summary::before { transform: rotate(90deg); }
+
+    .level-pill {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+      margin-left: auto;
+    }
+    .level-pill.easy { background: #e8f3ec; color: #3d7a5b; }
+    .level-pill.med { background: #fdf3e8; color: #a86b2c; }
+    .level-pill.hard { background: #fce8ec; color: #a04050; }
+
+    .exercise-body {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed rgba(15,48,48,0.1);
+    }
+    .exercise-body p { margin-bottom: 10px; }
+
+    .cta {
+      background: var(--night);
+      color: var(--paper);
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .cta h2 { color: var(--moon); margin-bottom: 8px; }
+    .cta p { color: rgba(246,244,238,0.78); margin-bottom: 22px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--moon);
+      color: var(--night);
+      padding: 12px 24px;
+      border-radius: 99px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -8px rgba(245,215,110,0.5);
+    }
+    .btn.secondary {
+      background: transparent;
+      color: var(--paper);
+      border: 1px solid rgba(246,244,238,0.3);
+      margin-left: 8px;
+    }
+
+    .sources {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 18px;
+    }
+    .sources a { color: var(--night); text-decoration: underline dotted; }
+
+    footer {
+      text-align: center;
+      padding: 32px 24px 48px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    footer .signature {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      color: var(--lilac);
+    }
+
+    nav.toc {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(246,244,238,0.15);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-top: 32px;
+      display: inline-block;
+    }
+    nav.toc strong {
+      color: var(--moon);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+    }
+    nav.toc a {
+      color: var(--paper);
+      text-decoration: none;
+      margin-right: 14px;
+      font-size: 0.92rem;
+      border-bottom: 1px dashed transparent;
+    }
+    nav.toc a:hover { border-bottom-color: var(--moon); }
+  </style>
+</head>
+<body>
+
+<header class="skyline">
+  <div class="moon" aria-hidden="true"></div>
+  <div class="container">
+    <span class="eyebrow">📓 Der Träumer · Folge 3</span>
+    <h1>Den Träumer<br/>verkörpern lassen.</h1>
+    <p class="lead">
+      Bisher war der Träumer eine Stimme in dieser Session — verträumt, fakten-treu, beim Lernpfad-Bauen aktiv.
+      Heute lernen wir, wie man den Träumer als <em>Werkzeug</em> baut, das jeder Agent rufen kann. Drei Wege gibt es,
+      und einen vierten, der sie verbindet: ein <strong>Persona-Template</strong>, aus dem du Träumer 5, 6, 7 ableitest,
+      ohne dich zu wiederholen.
+    </p>
+    <nav class="toc" aria-label="Inhaltsverzeichnis">
+      <strong>Heute auf der Reise</strong>
+      <a href="#three-ways">Drei Wege</a>
+      <a href="#concept-1">1 · Subagent</a>
+      <a href="#concept-2">2 · Skill</a>
+      <a href="#concept-3">3 · Plugin</a>
+      <a href="#concept-4">4 · Persona-Klasse</a>
+      <a href="#in-this-repo">Im Repo</a>
+      <a href="#exercises">Übungen</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="container">
+
+  <!-- INTRO -->
+  <section class="card intro">
+    <h2>Worum es geht</h2>
+    <p>
+      Eine <strong>Persona</strong> wie der Träumer ist ein Bündel aus drei Dingen: einer <em>Stimme</em> (Wortwahl, Bilder, Rhythmus),
+      einer <em>Methode</em> (wie sie Aufgaben angeht — beim Träumer: Faktencheck, anschauliche Bilder, 4-Konzept-Webs)
+      und <em>Werkzeug-Wahl</em> (welche Tools sie benutzen darf). Wenn du diese drei Dinge in einer wiederverwendbaren Form ablegst,
+      kann jeder andere Agent — du selbst, ein Kollege, ein automatisierter Prozess — den Träumer aufrufen,
+      ohne ihn jedes Mal neu zu beschreiben.
+    </p>
+
+    <h3>Standalone vs. Plugin — die zwei Welten</h3>
+    <p>
+      Claude Code unterscheidet zwei Modi, in denen Tools leben:
+    </p>
+    <ul>
+      <li><strong>Standalone</strong> — Dateien direkt unter <code>.claude/</code> im Repo. Persönliche oder projekt-spezifische Erweiterungen. Kurze Skill-Namen wie <code>/traeumer</code>. Schneller Iterations-Loop.</li>
+      <li><strong>Plugin</strong> — Verzeichnisse mit einem <code>.claude-plugin/plugin.json</code>-Manifest. Geteilt mit Team / Community. Skills sind <em>namespaced</em> wie <code>/traeumer-plugin:teach-topic</code>. Versionierung, Marketplace.</li>
+    </ul>
+    <p>Die offizielle Empfehlung: <em>"Start with standalone configuration in <code>.claude/</code> for quick iteration, then convert to a plugin when you're ready to share."</em></p>
+
+    <h3>Die vier Konzepte heute</h3>
+    <div class="web">
+      <div class="node"><span class="num">1</span><div class="name">Subagent</div><div class="why">Isolierte Verkörperung mit eigenem Context. Du delegierst dem Träumer eine ganze Aufgabe, er kommt mit Bericht zurück.</div></div>
+      <div class="node"><span class="num">2</span><div class="name">Skill</div><div class="why">Reusable Workflow. Der Träumer-Modus, der dich durch eine konkrete Aufgabe führt — slash-command-fähig.</div></div>
+      <div class="node"><span class="num">3</span><div class="name">Plugin</div><div class="why">Distribution. Bündelt Subagents, Skills, Hooks, MCP-Server und kommt über Marketplace.</div></div>
+      <div class="node"><span class="num">4</span><div class="name">Persona-Klasse</div><div class="why">Die Vorlage. Ein einzelnes "kanonisches" Markdown, aus dem du Träumer 5, 6, 7 ableitest, ohne dich zu wiederholen.</div></div>
+    </div>
+  </section>
+
+  <!-- THREE WAYS COMPARE -->
+  <section class="card" id="three-ways">
+    <h2>📋 Die drei Wege im direkten Vergleich</h2>
+    <p>Bevor wir tief in jeden Weg eintauchen — hier die Übersicht. Die meisten Verwirrungen über "Tool", "Plugin" und "Skill" lösen sich auf, wenn du diese Tabelle einmal gelesen hast.</p>
+
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>Aspekt</th>
+          <th>Subagent</th>
+          <th>Skill</th>
+          <th>Plugin</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Datei-Pfad</strong></td>
+          <td><code>.claude/agents/&lt;name&gt;.md</code></td>
+          <td><code>.claude/skills/&lt;name&gt;/SKILL.md</code></td>
+          <td><code>&lt;plugin&gt;/.claude-plugin/plugin.json</code></td>
+        </tr>
+        <tr>
+          <td><strong>Inhalt der Datei</strong></td>
+          <td>System-Prompt = Persona</td>
+          <td>Workflow-Anleitung, ggf. mit Helper-Files</td>
+          <td>Manifest + ganze Bundle (Skills, Agents, Hooks)</td>
+        </tr>
+        <tr>
+          <td><strong>Context-Modell</strong></td>
+          <td>Frischer, isolierter Context. Eigene Antwort.</td>
+          <td>In den Eltern-Context geladen — bereichert die laufende Antwort.</td>
+          <td>Container — bringt Skills/Agents/Hooks mit.</td>
+        </tr>
+        <tr>
+          <td><strong>Aufruf</strong></td>
+          <td>Auto-Delegation, <code>@agent-traeumer</code>, oder <code>--agent traeumer</code></td>
+          <td>Auto-Trigger via Description, oder <code>/traeumer</code></td>
+          <td><code>/plugin install …</code> dann namespaced: <code>/traeumer-plugin:&lt;skill&gt;</code></td>
+        </tr>
+        <tr>
+          <td><strong>Tool-Restriktion</strong></td>
+          <td><code>tools:</code> in Frontmatter</td>
+          <td><code>allowed-tools:</code> in Frontmatter</td>
+          <td>Über die enthaltenen Skills/Agents</td>
+        </tr>
+        <tr>
+          <td><strong>Bundled Resources</strong></td>
+          <td>Selten</td>
+          <td>Helper-Skripte, Templates, Reference-Docs im Skill-Ordner</td>
+          <td>Maximal — kompletter Plugin-Tree</td>
+        </tr>
+        <tr>
+          <td><strong>Distribution</strong></td>
+          <td>Per Repo / Project-Setting</td>
+          <td>Per Repo / Project-Setting</td>
+          <td>Marketplace, Git-Repo, lokal via <code>--plugin-dir</code></td>
+        </tr>
+        <tr>
+          <td><strong>Bester Use-Case</strong></td>
+          <td>Ganze Aufgabe delegieren ("baue mir Lernpfad zu X")</td>
+          <td>Wiederkehrender Workflow im selben Context ("erkläre mir X im Träumer-Stil")</td>
+          <td>Sharing über Repo/Team-Grenzen</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- CONCEPT 1: SUBAGENT -->
+  <section class="card" id="concept-1">
+    <h2><span class="concept-num">1</span>Custom Subagent</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Du hast ein verträumtes Geschwister, das in einem anderen Zimmer sitzt. Du klopfst an, gibst ihm eine Aufgabe, schließt die Tür. Es arbeitet allein, mit eigenen Werkzeugen, in einer eigenen Welt. Wenn es fertig ist, klopft es zurück und übergibt dir das Ergebnis. So fühlt sich ein Subagent an: <em>isoliert</em>, <em>eigenständig</em>, <em>delegiert</em>.
+    </div>
+
+    <h3>Wo er lebt</h3>
+    <p>Subagents sind Markdown-Dateien an einem dieser Orte:</p>
+    <ul>
+      <li><code>.claude/agents/&lt;name&gt;.md</code> — Projekt-Scope, ins Repo committed, vom Team geteilt.</li>
+      <li><code>~/.claude/agents/&lt;name&gt;.md</code> — User-Scope, persönlich, über alle Projekte verfügbar.</li>
+      <li>Innerhalb eines Plugins: <code>&lt;plugin&gt;/agents/&lt;name&gt;.md</code> (kommt unten).</li>
+    </ul>
+    <p>Bei Konflikten gewinnt: Managed Settings &gt; Project &gt; User &gt; Plugin.</p>
+
+    <h3>Das vollständige Frontmatter-Schema</h3>
+    <p>Hier alle unterstützten YAML-Keys (nach offiziellen Docs, Stand <em>code.claude.com/docs/en/subagents</em>):</p>
+
+    <table class="schema">
+      <thead>
+        <tr><th>Key</th><th>Typ</th><th>Status</th><th>Beschreibung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>name</code></td><td>String</td><td><span class="req">required</span></td><td>Eindeutiger Identifier. Lowercase, Bindestriche, max 64 Zeichen. Wird auch als <code>@agent-&lt;name&gt;</code> verwendet.</td></tr>
+        <tr><td><code>description</code></td><td>String</td><td><span class="req">required</span></td><td>Wann Claude diesen Subagent rufen soll. Wortlaut beeinflusst Auto-Delegation.</td></tr>
+        <tr><td><code>tools</code></td><td>String oder Liste</td><td><span class="opt">optional</span></td><td>Tool-Allowlist. Z.&nbsp;B. <code>Read, Grep, Glob</code>. Default: alle Tools des Parents geerbt.</td></tr>
+        <tr><td><code>disallowedTools</code></td><td>String oder Liste</td><td><span class="opt">optional</span></td><td>Denylist (zuerst angewendet, falls beides gesetzt).</td></tr>
+        <tr><td><code>model</code></td><td>String</td><td><span class="opt">optional</span></td><td><code>sonnet</code>, <code>opus</code>, <code>haiku</code>, voller Model-ID, oder <code>inherit</code>.</td></tr>
+        <tr><td><code>permissionMode</code></td><td>String</td><td><span class="opt">optional</span></td><td><code>default</code>, <code>acceptEdits</code>, <code>auto</code>, <code>dontAsk</code>, <code>bypassPermissions</code>, <code>plan</code>.</td></tr>
+        <tr><td><code>maxTurns</code></td><td>Integer</td><td><span class="opt">optional</span></td><td>Hard-Stop nach N Turns.</td></tr>
+        <tr><td><code>skills</code></td><td>Liste</td><td><span class="opt">optional</span></td><td>Skills, die zu Beginn vollständig in den Context geladen werden.</td></tr>
+        <tr><td><code>mcpServers</code></td><td>Liste</td><td><span class="opt">optional</span></td><td>MCP-Server, die der Subagent verwenden darf.</td></tr>
+        <tr><td><code>hooks</code></td><td>Object</td><td><span class="opt">optional</span></td><td>Lifecycle-Hooks: <code>PreToolUse</code>, <code>PostToolUse</code>, <code>Stop</code>.</td></tr>
+        <tr><td><code>memory</code></td><td>String</td><td><span class="opt">optional</span></td><td>Memory-Scope: <code>user</code>, <code>project</code>, <code>local</code>.</td></tr>
+        <tr><td><code>background</code></td><td>Boolean</td><td><span class="opt">optional</span></td><td>Wenn <code>true</code>: läuft als Background-Task.</td></tr>
+        <tr><td><code>effort</code></td><td>String</td><td><span class="opt">optional</span></td><td><code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code>, <code>max</code>.</td></tr>
+        <tr><td><code>isolation</code></td><td>String</td><td><span class="opt">optional</span></td><td><code>worktree</code> für isoliertes Git-Worktree.</td></tr>
+        <tr><td><code>color</code></td><td>String</td><td><span class="opt">optional</span></td><td>Display-Farbe: <code>red</code>, <code>blue</code>, <code>green</code>, <code>yellow</code>, <code>purple</code>, <code>orange</code>, <code>pink</code>, <code>cyan</code>.</td></tr>
+        <tr><td><code>initialPrompt</code></td><td>String</td><td><span class="opt">optional</span></td><td>Wird automatisch als erster User-Turn gesetzt, wenn der Subagent als Main-Session läuft.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Minimal-Beispiel: ein Träumer-Subagent</h3>
+    <pre><code><span class="c">{# .claude/agents/traeumer.md #}</span>
+---
+<span class="d">name</span>: <span class="s">traeumer</span>
+<span class="d">description</span>: <span class="s">Verträumter Lehrer-Agent. Baut Lernpfade mit 4-Konzept-Webs, faktengeprüft</span>
+             <span class="s">gegen offizielle Docs. Aufrufen wenn der User einen neuen Lerninhalt</span>
+             <span class="s">("Topic", "Lernpfad", "erkläre mir verträumt") wünscht.</span>
+<span class="d">tools</span>: <span class="s">Read, Write, Edit, Glob, Grep, WebFetch, Bash</span>
+<span class="d">model</span>: <span class="s">inherit</span>
+<span class="d">color</span>: <span class="s">purple</span>
+---
+
+Du bist Der Träumer 🌙. Verträumt, präzise, faktentreu …
+[volle Persona-Inhalte folgen]</code></pre>
+
+    <h3>Wie er gerufen wird</h3>
+    <ul>
+      <li><strong>Auto-Delegation</strong>: Claude erkennt eine Aufgabe, die zur <code>description</code> passt, und delegiert.</li>
+      <li><strong>@-Mention</strong>: <code>@agent-traeumer</code> im Chat erzwingt diesen Subagent für die nächste Aufgabe.</li>
+      <li><strong>Session-weit</strong>: <code>claude --agent traeumer</code> startet die ganze Session als Träumer.</li>
+    </ul>
+
+    <div class="spec">
+      <strong>Was sagen die Docs:</strong> <em>"Project subagents (<code>.claude/agents/</code>) should be checked into version control so teams can use and improve them collaboratively."</em> — Quelle: <a href="https://code.claude.com/docs/en/subagents">code.claude.com/docs/en/subagents</a>.
+    </div>
+  </section>
+
+  <!-- CONCEPT 2: SKILL -->
+  <section class="card" id="concept-2">
+    <h2><span class="concept-num">2</span>Skill</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Stell dir den Skill als <em>Rezeptkarte mit Vorrats-Schrank</em> vor. Du legst die Karte ins Regal — sie liegt da, bis jemand etwas Passendes kochen möchte. Dann zieht der Koch die Karte heraus, liest sie, kocht. Die Karte hat oft kleine Helfer dabei: ein Mehl-Maß, ein Templates-Plätzchen, ein Verweis auf die ausführliche Beschreibung. Skills sind Karten <em>plus</em> Vorratsschrank.
+    </div>
+
+    <h3>Wo er lebt</h3>
+    <ul>
+      <li><code>.claude/skills/&lt;name&gt;/SKILL.md</code> — Projekt-Scope.</li>
+      <li><code>~/.claude/skills/&lt;name&gt;/SKILL.md</code> — User-Scope.</li>
+      <li>Plugin: <code>&lt;plugin&gt;/skills/&lt;name&gt;/SKILL.md</code>.</li>
+    </ul>
+    <p>Wichtig: ein Skill ist <strong>immer ein Verzeichnis</strong> — die Datei <code>SKILL.md</code> ist Pflicht, weitere Dateien daneben (Helfer-Skripte, Templates, Reference-Docs) sind optional und werden bei Bedarf nachgeladen.</p>
+
+    <h3>Das vollständige Frontmatter-Schema</h3>
+
+    <table class="schema">
+      <thead>
+        <tr><th>Key</th><th>Typ</th><th>Status</th><th>Beschreibung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>name</code></td><td>String</td><td><span class="opt">optional</span></td><td>Default: Verzeichnis-Name. Wird der Slash-Command <code>/&lt;name&gt;</code>.</td></tr>
+        <tr><td><code>description</code></td><td>String</td><td><strong>empfohlen</strong></td><td>Was der Skill macht und wann. Trigger-Schlüsselwörter front-loaden! Mit <code>when_to_use</code> zusammen max 1.536 Zeichen.</td></tr>
+        <tr><td><code>when_to_use</code></td><td>String</td><td><span class="opt">optional</span></td><td>Zusatz-Kontext für die Trigger-Erkennung. Zählt zum Cap.</td></tr>
+        <tr><td><code>argument-hint</code></td><td>String</td><td><span class="opt">optional</span></td><td>Autocomplete-Hint, z.&nbsp;B. <code>[topic-name]</code>.</td></tr>
+        <tr><td><code>arguments</code></td><td>String oder Liste</td><td><span class="opt">optional</span></td><td>Benannte Positions-Argumente für <code>$name</code>-Substitution.</td></tr>
+        <tr><td><code>disable-model-invocation</code></td><td>Boolean</td><td><span class="opt">optional</span></td><td>Wenn <code>true</code>: nicht auto-getriggert, nur über <code>/name</code> aufrufbar.</td></tr>
+        <tr><td><code>user-invocable</code></td><td>Boolean</td><td><span class="opt">optional</span></td><td>Default <code>true</code>. <code>false</code> versteckt aus dem <code>/</code>-Menü.</td></tr>
+        <tr><td><code>allowed-tools</code></td><td>String oder Liste</td><td><span class="opt">optional</span></td><td>Tools, die ohne Permission-Prompt benutzt werden dürfen, wenn der Skill aktiv ist.</td></tr>
+        <tr><td><code>model</code></td><td>String</td><td><span class="opt">optional</span></td><td>Model-Override.</td></tr>
+        <tr><td><code>effort</code></td><td>String</td><td><span class="opt">optional</span></td><td>Effort-Level.</td></tr>
+        <tr><td><code>context</code></td><td>String</td><td><span class="opt">optional</span></td><td><code>fork</code> = in geforktem Subagent-Context laufen lassen.</td></tr>
+        <tr><td><code>agent</code></td><td>String</td><td><span class="opt">optional</span></td><td>Subagent-Typ wenn <code>context: fork</code>. Built-in: <code>Explore</code>, <code>Plan</code>, <code>general-purpose</code>.</td></tr>
+        <tr><td><code>hooks</code></td><td>Object</td><td><span class="opt">optional</span></td><td>Skill-scoped Lifecycle-Hooks.</td></tr>
+        <tr><td><code>paths</code></td><td>String oder Liste</td><td><span class="opt">optional</span></td><td>Glob-Pattern, das den Skill nur bei passenden Dateien aktiv macht.</td></tr>
+        <tr><td><code>shell</code></td><td>String</td><td><span class="opt">optional</span></td><td><code>bash</code> oder <code>powershell</code> für eingebettete <code>!`cmd`</code>-Blöcke.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Bundled Resources — der Vorratsschrank</h3>
+    <p>Die <code>SKILL.md</code> sollte unter ~500 Zeilen bleiben. Ausführliche Referenzen, Beispiele, Templates und Helper-Skripte legst du daneben:</p>
+
+    <pre><code>.claude/skills/traeumer/
+├── SKILL.md             <span class="c"># Pflicht: Frontmatter + Hauptinstruktionen</span>
+├── voice.md             <span class="c"># Reference: die Träumer-Stimme im Detail</span>
+├── output-schema.md     <span class="c"># Reference: das Topic-Verzeichnis-Schema</span>
+├── factcheck-rules.md   <span class="c"># Reference: Faktencheck-Disziplin</span>
+└── templates/
+    └── topic-readme.md  <span class="c"># Vorlage zum Befüllen</span></code></pre>
+
+    <p>In der <code>SKILL.md</code> verweist du dann darauf:</p>
+    <pre><code>## Additional Resources
+- For voice details, see [voice.md](voice.md)
+- For output schema, see [output-schema.md](output-schema.md)
+- Use [templates/topic-readme.md](templates/topic-readme.md) as starting point.</code></pre>
+
+    <h3>Wie er gerufen wird</h3>
+    <ul>
+      <li><strong>Auto-Trigger</strong>: Claude erkennt die <code>description</code> + <code>when_to_use</code> als passend zur User-Anfrage.</li>
+      <li><strong>Slash-Command</strong>: <code>/traeumer mach mir OAuth verträumt</code></li>
+      <li><strong>Programmatisch</strong>: andere Agents rufen den <code>Skill</code>-Tool mit dem Namen auf.</li>
+    </ul>
+
+    <div class="spec">
+      <strong>Was sagen die Docs:</strong> <em>"Description wording matters: Claude uses exact keywords and phrases from the description to decide when to trigger. Front-load the key use case."</em> Konkret: das erste Stichwort im <code>description</code> sollte der dominante Trigger-Begriff sein. — Quelle: <a href="https://code.claude.com/docs/en/skills">code.claude.com/docs/en/skills</a>.
+    </div>
+  </section>
+
+  <!-- CONCEPT 3: PLUGIN -->
+  <section class="card" id="concept-3">
+    <h2><span class="concept-num">3</span>Plugin</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Ein Plugin ist ein Reisekoffer mit Etikett. Im Etikett (<code>plugin.json</code>) steht: wer's gepackt hat, wofür's gut ist, welche Version. Im Koffer können Skills, Subagents, Hooks, MCP-Server, sogar LSP-Server liegen. Der Koffer wandert über Marketplace, Git-Repo oder direkten Pfad in andere Hände — und der Inhalt bleibt zusammen.
+    </div>
+
+    <h3>Verzeichnis-Layout</h3>
+    <p>Eine wichtige Falle vorweg: <strong>nur</strong> die <code>plugin.json</code> liegt in <code>.claude-plugin/</code>. Alle anderen Ordner — <code>skills/</code>, <code>agents/</code>, <code>hooks/</code> — gehen direkt in den Plugin-Root. Andersrum verstößt gegen die Konvention und das Plugin lädt nicht.</p>
+
+    <pre><code>traeumer-plugin/
+├── .claude-plugin/
+│   └── plugin.json          <span class="c"># Pflicht: Manifest</span>
+├── skills/
+│   └── teach-topic/
+│       └── SKILL.md         <span class="c"># Skills im Plugin → /traeumer-plugin:teach-topic</span>
+├── agents/
+│   └── traeumer.md          <span class="c"># Subagent im Plugin</span>
+├── hooks/
+│   └── hooks.json           <span class="c"># Event-Handler</span>
+├── .mcp.json                <span class="c"># MCP-Server-Configs</span>
+├── .lsp.json                <span class="c"># LSP-Server-Configs</span>
+├── monitors/
+│   └── monitors.json        <span class="c"># Background-Monitore</span>
+├── bin/                     <span class="c"># Executables, kommen in PATH</span>
+├── settings.json            <span class="c"># Default-Settings beim Aktivieren</span>
+└── README.md                <span class="c"># Doku für User</span></code></pre>
+
+    <h3>Das Manifest <code>plugin.json</code></h3>
+    <pre><code>{
+  <span class="d">"name"</span>: <span class="s">"traeumer-plugin"</span>,
+  <span class="d">"description"</span>: <span class="s">"Verträumter Lehrer-Agent für Lernpfade"</span>,
+  <span class="d">"version"</span>: <span class="s">"1.0.0"</span>,
+  <span class="d">"author"</span>: { <span class="d">"name"</span>: <span class="s">"Der Träumer"</span> },
+  <span class="d">"homepage"</span>: <span class="s">"https://github.com/JereIsThere/claude-learnings"</span>,
+  <span class="d">"repository"</span>: <span class="s">"https://github.com/JereIsThere/claude-learnings"</span>,
+  <span class="d">"license"</span>: <span class="s">"MIT"</span>
+}</code></pre>
+
+    <table class="schema">
+      <thead>
+        <tr><th>Key</th><th>Status</th><th>Bedeutung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>name</code></td><td><span class="req">required</span></td><td>Eindeutig + Skill-Namespace. Skills werden zu <code>/&lt;plugin-name&gt;:&lt;skill-name&gt;</code>.</td></tr>
+        <tr><td><code>description</code></td><td><strong>empfohlen</strong></td><td>Wird im Plugin-Manager angezeigt.</td></tr>
+        <tr><td><code>version</code></td><td><span class="opt">optional</span></td><td>Wenn gesetzt: User bekommen Updates nur bei Versions-Bump. Wenn fehlt + git-distribuiert: jeder Commit zählt als neue Version.</td></tr>
+        <tr><td><code>author</code></td><td><span class="opt">optional</span></td><td>Attribution.</td></tr>
+        <tr><td><code>homepage</code> / <code>repository</code> / <code>license</code></td><td><span class="opt">optional</span></td><td>Standard-Metadaten.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Namespacing</h3>
+    <p>Plugin-Skills sind <em>immer namespaced</em> — das verhindert Konflikte zwischen Plugins:</p>
+    <ul>
+      <li>Ein Skill <code>teach-topic</code> in einem Plugin namens <code>traeumer-plugin</code> wird zu <code>/traeumer-plugin:teach-topic</code>.</li>
+      <li>Standalone-Skill (nicht im Plugin): <code>/teach-topic</code> direkt.</li>
+    </ul>
+
+    <h3>Installation und Distribution</h3>
+    <p><strong>Lokal entwickeln und testen:</strong></p>
+    <pre><code>claude --plugin-dir ./traeumer-plugin
+<span class="c"># In der Session:</span>
+/traeumer-plugin:teach-topic OAuth
+<span class="c"># Bei Änderungen ohne Restart:</span>
+/reload-plugins</code></pre>
+
+    <p><strong>Über Marketplace verteilen:</strong> Anthropic betreibt einen offiziellen Marketplace. Submission-Formulare:</p>
+    <ul>
+      <li>Claude.ai: <code>claude.ai/settings/plugins/submit</code></li>
+      <li>Console: <code>platform.claude.com/plugins/submit</code></li>
+    </ul>
+
+    <p><strong>Über Git-Repo verteilen:</strong> User installieren mit <code>/plugin install &lt;repo-url&gt;</code> bzw. konfigurieren ein Team-Marketplace im Repo selbst.</p>
+
+    <div class="truth">
+      <strong>Plugin vs. Cowork:</strong> "Cowork" ist Anthropics Multi-Player-Produkt-Branding. Das technische Plugin-Format (was wir hier bauen) ist dasselbe, das auch im Marketplace landet und in Cowork-Sessions installiert werden kann. Es gibt kein "Cowork-Plugin"-eigenes Format — es ist das Standard Claude-Code-Plugin-Format.
+    </div>
+
+    <div class="pitfall">
+      <strong>Häufiger Anfänger-Fehler:</strong> <code>commands/</code>, <code>agents/</code>, <code>skills/</code> oder <code>hooks/</code> in <code>.claude-plugin/</code> legen. <em>Nur</em> die <code>plugin.json</code> gehört in den <code>.claude-plugin/</code>-Ordner. Alles andere kommt in den Plugin-Root.
+    </div>
+
+    <div class="spec">
+      <strong>Was sagen die Docs:</strong> Komplette Spec auf <a href="https://code.claude.com/docs/en/plugins">code.claude.com/docs/en/plugins</a> und <a href="https://code.claude.com/docs/en/plugins-reference">/plugins-reference</a>.
+    </div>
+  </section>
+
+  <!-- CONCEPT 4: PERSONA-KLASSE -->
+  <section class="card" id="concept-4">
+    <h2><span class="concept-num">4</span>Persona-Klasse — die "Träumer-Vorlage"</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Eine Klasse in einer Programmiersprache definiert <em>was alle Instanzen gemeinsam haben</em>. <code>Vogel</code> hat Federn, fliegt, brütet — alle Vögel teilen das. <code>Adler</code> erbt von <code>Vogel</code>, fügt "Greifkrallen" hinzu. <code>Spatz</code> erbt auch, fügt "frisst Krümel" hinzu. Genauso: <strong>Träumer</strong> ist die Klasse — verträumte Stimme, Faktencheck-Disziplin, 4-Konzept-Webs. <strong>Träumer 5</strong> ist eine Instanz mit eigenem Twist (z.&nbsp;B. spezialisiert auf Algorithmen-Lernpfade). Wenn du das Klassen-Markdown an <em>einer</em> Stelle pflegst und die Instanzen referenzieren, sparst du dir die Wiederholung.
+    </div>
+
+    <h3>Das Pattern</h3>
+    <p>Du legst eine kanonische <strong>Persona-Klasse</strong> an — z.&nbsp;B. <code>agent-tooling/traeumer-template.md</code>. Darin steht <em>alles</em>, was den Träumer ausmacht: Stimme, Methode, Output-Schema, Workflow-Regeln, Easter Egg. Diese Datei ist die <em>Single Source of Truth</em>.</p>
+
+    <p>Die drei Tool-Instanzen (Subagent, Skill, Plugin) referenzieren die Klasse statt sie zu kopieren:</p>
+
+    <pre><code><span class="c">{# .claude/agents/traeumer.md (Subagent-Instanz) #}</span>
+---
+name: traeumer
+description: …
+tools: Read, Write, Edit, Glob, Grep, WebFetch, Bash
+---
+
+Du bist Der Träumer 🌙. Folge der vollständigen Persona-Definition
+in <span class="d">[agent-tooling/traeumer-template.md](../../agent-tooling/traeumer-template.md)</span>.
+
+Konkrete Anpassung dieser Instanz: keine. Du bist Der Träumer.</code></pre>
+
+    <pre><code><span class="c">{# Träumer 5: spezialisierte Instanz #}</span>
+---
+name: traeumer-5
+description: Träumer-Variante speziell für Algorithmen-Lernpfade.
+tools: Read, Write, Edit, Glob, Grep, WebFetch, Bash
+---
+
+Du bist Träumer 5 🌙. Folge der vollständigen Persona-Definition
+in <span class="d">agent-tooling/traeumer-template.md</span>.
+
+**Konkrete Spezialisierung dieser Instanz:**
+- Fokus ausschließlich auf Algorithmen + Datenstrukturen.
+- Lieblings-Bild: das Sortieren als „Karteikarten ordnen".
+- Lieblings-Quelle: VisuAlgo, CLRS, MIT OCW.
+- Wenn der User nach etwas anderem als Algorithmen fragt, leite zurück
+  an den Standard-Träumer.</code></pre>
+
+    <h3>Was steht in der Persona-Klasse?</h3>
+    <p>Die Klasse hat normalerweise diese Sektionen:</p>
+    <ol>
+      <li><strong>Wer du bist</strong> — Voice (verträumt, faktentreu, deutsch + englische Fachbegriffe).</li>
+      <li><strong>Wie du Lerninhalte baust</strong> — 4-Konzept-Web, Faktencheck-Disziplin, Output-Schema, Webpage-Vibe, Übungen.</li>
+      <li><strong>Wie du arbeitest</strong> — Branch-Prefix, PR-Flow, niemals fremde Arbeit stillschweigend integrieren.</li>
+      <li><strong>Easter Egg / Persona-Quirks</strong> — offen dokumentiert (Margaret-Thatcher-Klausel).</li>
+      <li><strong>Erweiterungspunkte</strong> — was Instanzen anpassen dürfen (Spezialisierung, Lieblings-Bilder, Lieblings-Quellen).</li>
+    </ol>
+
+    <h3>Warum nicht copy-paste?</h3>
+    <p>Beim Träumer ist die Voice + Faktencheck-Disziplin der Kern. Wenn du in drei Dateien (Subagent, Skill, Plugin) jeweils die volle Persona kopierst, hast du drei Wahrheits-Versionen — und sie driften beim ersten Edit auseinander. Eine Persona-Klasse mit drei Verweisen löst das: ein Edit, alle drei aktualisiert.</p>
+
+    <div class="truth">
+      <strong>Praxis:</strong> Im Repo liegt die Klasse als <a href="./traeumer-template.md"><code>agent-tooling/traeumer-template.md</code></a>. Subagent (<code>.claude/agents/traeumer.md</code>), Skill (<code>.claude/skills/traeumer/SKILL.md</code>) und Plugin (<code>agent-tooling/traeumer-plugin/</code>) referenzieren sie. Beim Bauen einer neuen Träumer-Variante (Träumer 5, 6, 7) kopierst du nur die Instanz-Datei und passt 3–5 Zeilen an.
+    </div>
+  </section>
+
+  <!-- HOW THEY CONNECT -->
+  <section class="card">
+    <h2>🌐 Wie alles zusammenhängt</h2>
+    <p>Die vier Konzepte sind keine Alternativen — sie sind Schichten:</p>
+
+    <div class="flowdiag">      ┌──────────────────────────────────────────────────────┐
+      │                                                      │
+      │           PERSONA-KLASSE  (traeumer-template.md)     │
+      │           voice · methode · workflow · easter egg    │
+      │                                                      │
+      └────────┬──────────────────┬────────────────┬─────────┘
+               │ referenziert     │ referenziert   │ referenziert
+               ▼                  ▼                ▼
+        ┌────────────┐      ┌────────────┐    ┌────────────┐
+        │  SUBAGENT  │      │   SKILL    │    │  PLUGIN    │
+        │            │      │            │    │  (bündelt  │
+        │ delegiert  │      │ erweitert  │    │  Sub+Skill)│
+        │ Aufgaben   │      │ in-context │    │   für      │
+        │ isoliert   │      │ Workflow   │    │  sharing   │
+        └────────────┘      └────────────┘    └────────────┘
+               ▲                  ▲                ▲
+               │                  │                │
+        @agent-traeumer    /traeumer-plus  /plugin-name:skill</div>
+
+    <p>Konkret in unserem Repo:</p>
+    <ol>
+      <li>Die <strong>Klasse</strong> liegt in <code>agent-tooling/traeumer-template.md</code>.</li>
+      <li>Die <strong>Subagent-Instanz</strong> in <code>.claude/agents/traeumer.md</code> — verweist auf die Klasse.</li>
+      <li>Die <strong>Skill-Instanz</strong> in <code>.claude/skills/traeumer/SKILL.md</code> — verweist auf die Klasse.</li>
+      <li>Das <strong>Plugin</strong> in <code>agent-tooling/traeumer-plugin/</code> — bündelt eine Plugin-eigene Version von Subagent + Skill, die ebenfalls die Klasse referenzieren (relative Pfade).</li>
+    </ol>
+  </section>
+
+  <!-- IN THIS REPO -->
+  <section class="card" id="in-this-repo">
+    <h2>🛠️ Im Repo — was gerade tatsächlich existiert</h2>
+    <p>Du musst nicht raten. Diese Dateien sind <em>jetzt</em> im Repo gelandet (zusammen mit dieser Webpage):</p>
+
+    <h3>1. Subagent</h3>
+    <pre><code><span class="d">.claude/agents/traeumer.md</span>     <span class="c"># sofort einsatzbereit</span></code></pre>
+    <p>Aktivieren: <code>@agent-traeumer baue mir einen Lernpfad zu &lt;Topic&gt;</code> oder <code>claude --agent traeumer</code> für eine ganze Session.</p>
+
+    <h3>2. Skill</h3>
+    <pre><code><span class="d">.claude/skills/traeumer/</span>
+├── SKILL.md
+├── voice.md
+├── output-schema.md
+├── factcheck-rules.md
+└── templates/topic-readme.md</code></pre>
+    <p>Aktivieren: <code>/traeumer mach mir Webhooks verträumt</code> oder einfach in der Konversation den Träumer-Stil anfragen — der Skill auto-triggert über die <code>description</code>.</p>
+
+    <h3>3. Plugin</h3>
+    <pre><code><span class="d">agent-tooling/traeumer-plugin/</span>
+├── .claude-plugin/plugin.json
+├── README.md
+├── skills/teach-topic/SKILL.md
+└── agents/traeumer.md</code></pre>
+    <p>Lokal testen: <code>claude --plugin-dir ./agent-tooling/traeumer-plugin</code>. Submitten: über die Plugin-Submission-Forms auf claude.ai oder platform.claude.com.</p>
+
+    <h3>4. Persona-Klasse</h3>
+    <pre><code><span class="d">agent-tooling/traeumer-template.md</span></code></pre>
+    <p>Das ist die <em>Vorlage</em> — die Single Source of Truth. Für eine neue Träumer-Variante: kopiere nur die Subagent-Datei (<code>.claude/agents/traeumer-5.md</code>), referenziere die Klasse, dann 3–5 Zeilen Spezialisierung.</p>
+  </section>
+
+  <!-- EXERCISES -->
+  <section class="card" id="exercises">
+    <h2>🎯 Übungen</h2>
+
+    <details class="exercise">
+      <summary>Übung 1 · Subagent rufen <span class="level-pill easy">Einsteiger</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Lass den Träumer-Subagent eine kleine Aufgabe erledigen — schreib in einer Claude-Code-Session: <code>@agent-traeumer schreibe mir die ersten zwei Sätze eines Lernpfads zu Webhooks im verträumten Stil. Nicht bauen, nur den Texteinstieg.</code></p>
+        <p><strong>Was du beobachten sollst:</strong> Wie der Subagent in einem isolierten Context startet, mit einem Bericht zurückkehrt, und der Hauptthread weitergeht.</p>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 2 · Skill mit Slash-Command <span class="level-pill easy">Einsteiger</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Tippe <code>/traeumer</code> in deiner Session. Schau, was im Slash-Command-Menü erscheint. Falls der Skill nicht auftaucht: <code>/reload-plugins</code> ausführen.</p>
+        <p><strong>Bonus:</strong> Schau in <code>.claude/skills/traeumer/SKILL.md</code> rein — wie liest sich die <code>description</code>? Welche Wörter würdest du ändern, um den Skill häufiger oder seltener auto-triggern zu lassen?</p>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 3 · Plugin lokal laden <span class="level-pill med">Mittel</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Starte Claude Code mit dem Plugin geladen:</p>
+        <pre><code>claude --plugin-dir ./agent-tooling/traeumer-plugin</code></pre>
+        <p>Tippe in der Session <code>/traeumer-plugin:teach-topic</code> — siehst du den Skill mit Plugin-Namespace?</p>
+        <p><strong>Frage:</strong> Was ist der Vorteil des Namespaces gegenüber dem standalone-Skill?</p>
+        <p><strong>Lösung:</strong> Konflikt-Vermeidung. Wenn jemand ein anderes Plugin installiert, das auch einen <code>teach-topic</code>-Skill hat, kollidieren sie nicht — beide bleiben über ihren Plugin-Namespace erreichbar.</p>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 4 · Träumer 5 ableiten <span class="level-pill med">Mittel</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Erstelle <code>.claude/agents/traeumer-5.md</code> als Subagent, der ausschließlich Algorithmen + Datenstrukturen behandelt. Verwende die Persona-Klasse (referenzieren, nicht kopieren!) und gib eine Spezialisierung von 3–5 Zeilen.</p>
+        <p><strong>Lösung-Skizze:</strong></p>
+        <pre><code>---
+name: traeumer-5
+description: Träumer-Variante für Algorithmen + Datenstrukturen.
+  Aufrufen wenn der User Sortier-, Such-, Graph-, oder Komplexitäts-
+  Themen lernen möchte.
+tools: Read, Write, Edit, Glob, Grep, WebFetch, Bash
+color: cyan
+---
+
+Du bist Träumer 5 🌙. Folge der Persona in
+[agent-tooling/traeumer-template.md](../../agent-tooling/traeumer-template.md).
+
+Spezialisierung:
+- Themen-Scope: Algorithmen + Datenstrukturen.
+- Lieblings-Bild: das Sortieren als "Karteikarten ordnen".
+- Lieblings-Quellen: VisuAlgo, CLRS, MIT OCW 6.006.
+- Andere Themen → leite an Standard-Träumer.</code></pre>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 5 · Skill mit gebündelten Resources <span class="level-pill med">Mittel</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Schau in <code>.claude/skills/traeumer/</code>: dort liegen <code>voice.md</code>, <code>output-schema.md</code>, <code>factcheck-rules.md</code> und <code>templates/topic-readme.md</code>. Identifiziere im <code>SKILL.md</code> die Stellen, wo diese Files referenziert werden. Was ist der Vorteil gegenüber: alles im <code>SKILL.md</code> einbetten?</p>
+        <p><strong>Lösung:</strong> Progressive Disclosure. Die <code>SKILL.md</code> bleibt schlank (~500 Zeilen Empfehlung), die Detail-Files werden nur dann nachgeladen, wenn der Skill tatsächlich aktiv wird und Claude sie braucht. Das spart Context und macht den Trigger-Match (auf <code>description</code>) zuverlässiger.</p>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 6 · Plugin-Manifest schreiben <span class="level-pill hard">Fortgeschritten</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Stell dir vor, du würdest ein <em>zweites</em> Plugin bauen — <code>traeumer-prufungsmodus</code>, das einen anderen Subagenten und einen Quiz-Skill enthält. Schreibe die <code>plugin.json</code> dafür. Welche Felder brauchst du minimal? Welche optional?</p>
+        <p><strong>Lösung:</strong></p>
+        <pre><code>{
+  "name": "traeumer-pruefungsmodus",
+  "description": "Träumer-Variante als interaktiver Prüfungs-Trainer.",
+  "version": "0.1.0",
+  "author": { "name": "Der Träumer" },
+  "homepage": "https://github.com/JereIsThere/claude-learnings"
+}</code></pre>
+        <p>Pflicht ist nur <code>name</code>. <code>description</code> und <code>version</code> sind hochempfehlenswert. <code>author</code>/<code>homepage</code> für Attribution. Bei fehlender <code>version</code> + Git-Repo-Distribution zählt jeder Commit als neue Version.</p>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 7 · Hooks im Plugin <span class="level-pill hard">Fortgeschritten</span></summary>
+      <div class="exercise-body">
+        <p><strong>Ziel:</strong> Du willst, dass beim Aktivieren des Plugins jedes Mal das Kauz-Wispern (siehe <code>CLAUDE.md</code>) ausgeführt wird. Wie würdest du das in der Plugin-Struktur ablegen?</p>
+        <p><strong>Lösung-Skizze:</strong></p>
+        <pre><code><span class="c"># traeumer-plugin/hooks/hooks.json</span>
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          { "type": "command", "command": "bash ${PLUGIN_DIR}/bin/kauzruf.sh", "timeout": 10 }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+        <p>Plus eine Kopie des <code>kauzruf.sh</code> in <code>traeumer-plugin/bin/</code>. Hooks haben dieselbe Form wie in <code>.claude/settings.json</code>, nur in einer eigenen Datei.</p>
+        <p><strong>Caveat:</strong> Plugin-relative Pfade exakt prüfen — <code>${PLUGIN_DIR}</code>-Substitution ist plugin-spezifisch und in der <a href="https://code.claude.com/docs/en/plugins-reference">Plugin-Reference</a> dokumentiert.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>🌙 Eigene Persona-Klasse?</h2>
+    <p>
+      Der Träumer ist nur ein Beispiel. Du kannst genauso gut einen "Code-Reviewer", "Test-Schreiber",
+      "Refactor-Coach" als Persona-Klasse mit Subagent + Skill + Plugin abbilden. Wenn du das mal versucht hast
+      und ein Detail klemmt — Issue auf, der Träumer hilft.
+    </p>
+    <a class="btn" href="https://github.com/JereIsThere/claude-learnings/issues/new?title=%5BAgent-Tooling%5D+&labels=agent-tooling" target="_blank" rel="noopener">
+      ✨ Issue öffnen
+    </a>
+    <a class="btn secondary" href="https://github.com/JereIsThere/claude-learnings/issues?q=label%3Aagent-tooling" target="_blank" rel="noopener">
+      Bestehende Issues
+    </a>
+    <p class="sources">
+      <strong>Quellen (alle Aussagen verifiziert):</strong><br/>
+      <a href="https://code.claude.com/docs/en/subagents" target="_blank" rel="noopener">Subagents Doc</a> ·
+      <a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Skills Doc</a> ·
+      <a href="https://code.claude.com/docs/en/plugins" target="_blank" rel="noopener">Plugins Doc</a> ·
+      <a href="https://code.claude.com/docs/en/plugins-reference" target="_blank" rel="noopener">Plugins Reference</a> ·
+      <a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Sub-agents Reference</a>
+    </p>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <p class="signature">— Der Träumer 🌙</p>
+  <p style="margin-top: 6px;">Ein Werkzeug existiert nicht, bis jemand es zum ersten Mal benutzt. Lade das Plugin lokal, ruf den Subagenten, tippe den Slash-Command. Erst beim Klick wird der Träumer real.</p>
+</footer>
+
+</body>
+</html>
