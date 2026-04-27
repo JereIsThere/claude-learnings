@@ -24,6 +24,10 @@ Machine Learning fundamentals and neural networks. Perfect preparation for ML co
 Vom Träumer eingerichtet: Template-Vererbung, Filter & Macros, Kontext/Scoping und Autoescape/SSTI — die vier verbundenen Konzepte, die Jinja in Flask, Ansible & Co. ausmachen. Inklusive vollständiger Lern-Webpage und 7 Übungen.
 - **[Jinja Learning Path →](./jinja-templates/README.md)** · **[Webpage öffnen →](./jinja-templates/index.html)**
 
+### 6. **OAuth 2.0** 🌙
+Vom Träumer eingerichtet: Rollen & Grants, Authorization Code + PKCE, OpenID Connect (OIDC) und JWTs/Validierung — plus eine Standards-Landkarte (RFC 6749, 7636, 9700, 8725, OIDC Core 1.0). Faktencheck gegen RFCs, inklusive Lern-Webpage, BCP-Checkliste und 7 Übungen mit Lösung.
+- **[OAuth Learning Path →](./oauth-2/README.md)** · **[Webpage öffnen →](./oauth-2/index.html)**
+
 ---
 
 ## How to Use This Repository

@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OAuth 2.0 — der Träumer's Lernreise</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --night: #0f1230;
+      --night-2: #1a1d4a;
+      --paper: #f6f4ee;
+      --ink: #1c1c2e;
+      --muted: #6b6883;
+      --moon: #f5d76e;
+      --lilac: #b39bd8;
+      --rose: #e8a4b8;
+      --mint: #7fc8a9;
+      --code-bg: #14152e;
+      --code-fg: #d8d8f0;
+      --code-accent: #f5d76e;
+      --radius: 16px;
+      --shadow: 0 12px 40px -16px rgba(15, 18, 48, 0.45);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    .skyline {
+      position: relative;
+      background:
+        radial-gradient(ellipse 60% 80% at 80% 10%, rgba(245,215,110,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 15% 30%, rgba(179,155,216,0.30) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(232,164,184,0.18) 0%, transparent 70%),
+        linear-gradient(180deg, var(--night) 0%, var(--night-2) 100%);
+      color: var(--paper);
+      padding: 96px 24px 120px;
+      overflow: hidden;
+    }
+
+    .skyline::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 12% 18%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 28% 70%, white 50%, transparent 51%),
+        radial-gradient(2px 2px at 62% 22%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 78% 55%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 88% 12%, white 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 40% 38%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 8% 80%, white 50%, transparent 51%),
+        radial-gradient(1px 1px at 92% 78%, white 50%, transparent 51%),
+        radial-gradient(2px 2px at 50% 86%, white 50%, transparent 51%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--moon);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .lead {
+      font-size: 1.2rem;
+      max-width: 620px;
+      color: rgba(246, 244, 238, 0.82);
+      font-weight: 300;
+    }
+
+    .moon {
+      position: absolute;
+      top: 60px;
+      right: 40px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff5d0 0%, #f5d76e 60%, #c89c2a 100%);
+      box-shadow: 0 0 60px 8px rgba(245,215,110,0.25);
+    }
+
+    @media (max-width: 640px) { .moon { width: 60px; height: 60px; top: 30px; right: 24px; } }
+
+    main {
+      padding: 0 24px 80px;
+      margin-top: -60px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(15,18,48,0.05);
+    }
+
+    .card.intro { background: linear-gradient(135deg, #fff 0%, #fdf9f0 100%); }
+
+    h2 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      margin: 28px 0 10px;
+      color: var(--night);
+    }
+
+    h4 {
+      font-size: 0.85rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 22px 0 8px;
+      font-weight: 600;
+    }
+
+    p { margin-bottom: 14px; }
+    ul, ol { margin: 8px 0 14px 24px; }
+    li { margin-bottom: 4px; }
+
+    .concept-num {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--night);
+      color: var(--moon);
+      font-family: 'Fraunces', serif;
+      text-align: center;
+      line-height: 36px;
+      margin-right: 12px;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+
+    .vivid {
+      background: linear-gradient(90deg, rgba(179,155,216,0.18), rgba(232,164,184,0.18));
+      border-left: 3px solid var(--lilac);
+      padding: 14px 18px;
+      border-radius: 0 12px 12px 0;
+      margin: 16px 0 18px;
+      font-style: italic;
+      color: var(--night);
+    }
+    .vivid strong { font-style: normal; }
+
+    code, pre { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    code {
+      background: rgba(15,18,48,0.06);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 18px 22px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 0.86rem;
+      line-height: 1.55;
+      margin: 12px 0 18px;
+    }
+    pre code { background: transparent; padding: 0; color: inherit; font-size: inherit; }
+    pre .c { color: #7c7ca3; font-style: italic; }
+    pre .k { color: var(--code-accent); }
+    pre .s { color: var(--mint); }
+    pre .v { color: var(--rose); }
+    pre .d { color: var(--lilac); font-weight: 500; }
+
+    .pitfall {
+      background: #fdf2f2;
+      border-left: 3px solid #d96666;
+      padding: 12px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+    .pitfall strong { color: #b94444; }
+
+    .truth {
+      background: #f0f7f3;
+      border-left: 3px solid var(--mint);
+      padding: 12px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+    .truth strong { color: #3d7a5b; }
+
+    .spec {
+      background: #f4f1fa;
+      border-left: 3px solid var(--lilac);
+      padding: 12px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .spec strong { color: #6b3da7; }
+    .spec a { color: #6b3da7; }
+
+    /* Standards-Landkarte */
+    .landmap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 24px 0 8px;
+    }
+    .landmap .layer {
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: var(--paper);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .landmap .layer .label {
+      font-family: 'Fraunces', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 6px;
+    }
+    .landmap .layer .name { font-weight: 600; margin-bottom: 4px; }
+    .landmap .layer .why { opacity: 0.78; font-size: 0.85rem; }
+
+    .landmap .core      { background: var(--night); }
+    .landmap .ext       { background: #2d3163; }
+    .landmap .identity  { background: #4a3d6b; }
+    .landmap .format    { background: #3d5066; }
+    .landmap .bcp       { background: #6b3a4a; }
+    .landmap .future    { background: #3a6b5a; }
+
+    @media (max-width: 720px) { .landmap { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .landmap { grid-template-columns: 1fr; } }
+
+    /* Concept-Web (intro) */
+    .web {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin: 24px 0 8px;
+    }
+    .web .node {
+      background: var(--night);
+      color: var(--paper);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .web .node .num {
+      color: var(--moon);
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    .web .node .name { font-weight: 600; margin-top: 4px; }
+    .web .node .why {
+      font-size: 0.88rem;
+      color: rgba(246,244,238,0.7);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+    @media (max-width: 540px) { .web { grid-template-columns: 1fr; } }
+
+    /* ASCII flow diagrams */
+    .flowdiag {
+      background: #faf8f3;
+      border: 1px solid rgba(15,18,48,0.08);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+
+    /* Exercises */
+    details.exercise {
+      background: #faf8f3;
+      border: 1px solid rgba(15,18,48,0.08);
+      border-radius: 12px;
+      padding: 16px 22px;
+      margin-bottom: 12px;
+    }
+    details.exercise[open] { background: #fffdf7; }
+    details.exercise summary {
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 0;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    details.exercise summary::-webkit-details-marker { display: none; }
+    details.exercise summary::before {
+      content: '▸';
+      color: var(--lilac);
+      transition: transform 0.2s;
+    }
+    details.exercise[open] summary::before { transform: rotate(90deg); }
+
+    .level-pill {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+      margin-left: auto;
+    }
+    .level-pill.easy { background: #e8f3ec; color: #3d7a5b; }
+    .level-pill.med { background: #fdf3e8; color: #a86b2c; }
+    .level-pill.hard { background: #fce8ec; color: #a04050; }
+
+    .exercise-body {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed rgba(15,18,48,0.1);
+    }
+    .exercise-body p { margin-bottom: 10px; }
+
+    /* CTA */
+    .cta {
+      background: var(--night);
+      color: var(--paper);
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .cta h2 { color: var(--moon); margin-bottom: 8px; }
+    .cta p { color: rgba(246,244,238,0.78); margin-bottom: 22px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--moon);
+      color: var(--night);
+      padding: 12px 24px;
+      border-radius: 99px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -8px rgba(245,215,110,0.5);
+    }
+    .btn.secondary {
+      background: transparent;
+      color: var(--paper);
+      border: 1px solid rgba(246,244,238,0.3);
+      margin-left: 8px;
+    }
+
+    .sources {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 18px;
+    }
+    .sources a { color: var(--night); text-decoration: underline dotted; }
+
+    footer {
+      text-align: center;
+      padding: 32px 24px 48px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    footer .signature {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      color: var(--lilac);
+    }
+
+    nav.toc {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(246,244,238,0.15);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-top: 32px;
+      display: inline-block;
+    }
+    nav.toc strong {
+      color: var(--moon);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+    }
+    nav.toc a {
+      color: var(--paper);
+      text-decoration: none;
+      margin-right: 14px;
+      font-size: 0.92rem;
+      border-bottom: 1px dashed transparent;
+    }
+    nav.toc a:hover { border-bottom-color: var(--moon); }
+  </style>
+</head>
+<body>
+
+<header class="skyline">
+  <div class="moon" aria-hidden="true"></div>
+  <div class="container">
+    <span class="eyebrow">📓 Der Träumer · Folge 2</span>
+    <h1>OAuth 2.0,<br/>verträumt erklärt.</h1>
+    <p class="lead">
+      Stell dir vor, ein Reisender (du) möchte einen Brief abholen, der bei deinem alten Postamt liegt.
+      Du gibst aber niemandem deinen Hausschlüssel. Stattdessen schreibt das Postamt dir einen kleinen,
+      nur für diesen Brief gültigen Schein. Das ist OAuth — und es ist <em>nicht</em> Login,
+      auch wenn das Internet dir das jahrelang erzählt hat. Heute klären wir das, mit Standards-Landkarte.
+    </p>
+    <nav class="toc" aria-label="Inhaltsverzeichnis">
+      <strong>Heute auf der Reise</strong>
+      <a href="#landmap">Landkarte</a>
+      <a href="#concept-1">1 · Rollen &amp; Grants</a>
+      <a href="#concept-2">2 · Code + PKCE</a>
+      <a href="#concept-3">3 · OIDC</a>
+      <a href="#concept-4">4 · JWTs</a>
+      <a href="#read-rfcs">RFCs lesen</a>
+      <a href="#exercises">Übungen</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="container">
+
+  <!-- INTRO -->
+  <section class="card intro">
+    <h2>Was OAuth ist — und was es nicht ist</h2>
+    <p>
+      <strong>OAuth 2.0</strong> ist ein <strong>Autorisierungs</strong>-Protokoll. Es regelt, wie eine App (der "Client") im Namen eines Nutzers (des "Resource Owner") auf eine API (den "Resource Server") zugreifen darf — ohne dass der Nutzer sein Passwort der App geben muss. Das ist alles. Mehr soll OAuth nicht.
+    </p>
+    <p>
+      <strong>Authentication</strong> — also "wer bist du?" — ist <em>nicht</em> der Job von OAuth. Wenn du "Login mit Google" gebaut hast und dachtest, das sei OAuth, hast du in Wahrheit <strong>OpenID Connect (OIDC)</strong> benutzt — eine Schicht <em>oben drauf</em>. Wir kommen zu OIDC in Konzept 3. Diese Verwechslung ist die Ursache der meisten OAuth-Bugs der letzten 15 Jahre.
+    </p>
+
+    <h3>Die drei kleinen Worte, die alles erklären</h3>
+    <div class="vivid">
+      <strong>Bild:</strong> Die App fragt dich: <em>"Darf ich für dich auf Google Drive lesen?"</em> Du sagst Google: <em>"Ja, das darf sie — aber nur lesen, und nur Drive, nicht Mail."</em> Google gibt der App einen <strong>Access Token</strong> mit genau diesem eingeschränkten Recht. Die App benutzt den Token bei Drive. Drive prüft den Token. Fertig.
+    </div>
+
+    <h3>Die vier verbundenen Konzepte</h3>
+    <p>Ohne <em>Rollen &amp; Grants</em> weißt du nicht wer wann was tut. Ohne <em>Authorization Code + PKCE</em> ist dein moderner Flow unsicher. Ohne <em>OIDC</em> hast du keine Authentication. Ohne <em>JWT-Validierung</em> kannst du Tokens nicht überprüfen.</p>
+
+    <div class="web" aria-label="Konzept-Netz">
+      <div class="node"><span class="num">1</span><div class="name">Rollen &amp; Grant Types</div><div class="why">Wer spricht mit wem, und welcher Flow passt wann.</div></div>
+      <div class="node"><span class="num">2</span><div class="name">Authorization Code + PKCE</div><div class="why">Der moderne Default. PKCE ist heute Pflicht, nicht Kür.</div></div>
+      <div class="node"><span class="num">3</span><div class="name">OpenID Connect (OIDC)</div><div class="why">Authentication oben drauf — ID Token vs Access Token.</div></div>
+      <div class="node"><span class="num">4</span><div class="name">JWTs &amp; Validierung</div><div class="why">Das Format und seine Stolperfallen — alg=none, RS/HS-Confusion.</div></div>
+    </div>
+  </section>
+
+  <!-- STANDARDS LANDMAP -->
+  <section class="card" id="landmap">
+    <h2>📜 Die Standards-Landkarte</h2>
+    <p>OAuth ist kein einzelnes Dokument — es ist eine ganze Bibliothek von <strong>RFCs</strong> (vom IETF) und <strong>OpenID Specs</strong> (von der OpenID Foundation), die aufeinander bauen. Hier sind die Schichten, die du kennen solltest:</p>
+
+    <div class="landmap">
+      <div class="layer core">
+        <div class="label">Foundation</div>
+        <div class="name">RFC 6749</div>
+        <div class="why">OAuth 2.0 Authorization Framework — der Kern: Rollen, Grants, Endpoints.</div>
+      </div>
+      <div class="layer core">
+        <div class="label">Foundation</div>
+        <div class="name">RFC 6750</div>
+        <div class="why">Bearer Token Usage — wie der Access Token im <code>Authorization</code>-Header zur API getragen wird.</div>
+      </div>
+      <div class="layer ext">
+        <div class="label">Extension</div>
+        <div class="name">RFC 7636 (PKCE)</div>
+        <div class="why">Proof Key for Code Exchange — Schutz vor Auth-Code-Diebstahl.</div>
+      </div>
+      <div class="layer ext">
+        <div class="label">Extension</div>
+        <div class="name">RFC 8252</div>
+        <div class="why">OAuth for Native Apps — wie Mobile/Desktop-Apps OAuth korrekt machen.</div>
+      </div>
+      <div class="layer ext">
+        <div class="label">Extension</div>
+        <div class="name">RFC 9068</div>
+        <div class="why">JWT Profile for OAuth Access Tokens — wenn dein Access Token ein JWT sein soll.</div>
+      </div>
+      <div class="layer identity">
+        <div class="label">Identity Layer</div>
+        <div class="name">OIDC Core 1.0</div>
+        <div class="why">OpenID Connect — Authentication auf OAuth. ID Token, UserInfo, Discovery.</div>
+      </div>
+      <div class="layer format">
+        <div class="label">Token-Format</div>
+        <div class="name">RFC 7519 (JWT)</div>
+        <div class="why">JSON Web Token — Header.Payload.Signature.</div>
+      </div>
+      <div class="layer format">
+        <div class="label">Token-Format</div>
+        <div class="name">RFC 7515 (JWS) / 7516 (JWE)</div>
+        <div class="why">Signiert (JWS) vs verschlüsselt (JWE). 99% der Token sind JWS.</div>
+      </div>
+      <div class="layer format">
+        <div class="label">Token-Format</div>
+        <div class="name">RFC 7517 (JWK)</div>
+        <div class="why">JSON Web Key — wie öffentliche Schlüssel über <code>jwks_uri</code> publiziert werden.</div>
+      </div>
+      <div class="layer bcp">
+        <div class="label">Best Current Practice</div>
+        <div class="name">RFC 9700 (2025)</div>
+        <div class="why">OAuth 2.0 Security BCP — die Wahrheit über sichere Deployments. Lies das hier wenn nichts anderes.</div>
+      </div>
+      <div class="layer bcp">
+        <div class="label">Best Current Practice</div>
+        <div class="name">RFC 8725</div>
+        <div class="why">JWT Best Current Practices — alg=none, Algorithm-Confusion, Key-Validation.</div>
+      </div>
+      <div class="layer future">
+        <div class="label">Im Kommen</div>
+        <div class="name">OAuth 2.1 (Draft)</div>
+        <div class="why">Konsolidierung: PKCE pflicht, Implicit &amp; ROPC weg, exact-match Redirect URIs.</div>
+      </div>
+    </div>
+
+    <div class="truth">
+      <strong>Lese-Reihenfolge für Eilige:</strong> RFC 6749 §1–§4.1 (60 min) → RFC 7636 (15 min) → <strong>RFC 9700</strong> (90 min, das wichtigste Dokument der ganzen Liste) → OIDC Core 1.0 §2–§3 (45 min) → RFC 8725 (15 min). Mit diesen ~3,5 Stunden kennst du OAuth besser als 95 % aller Entwickler.
+    </div>
+  </section>
+
+  <!-- CONCEPT 1 -->
+  <section class="card" id="concept-1">
+    <h2><span class="concept-num">1</span>Rollen &amp; Grant Types</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Vier Schauspieler in einem kleinen Stück. Du (der <em>Resource Owner</em>) sitzt im Zuschauerraum. Eine App (der <em>Client</em>) bittet einen Türsteher (den <em>Authorization Server</em>) um Zutritt zum Tresorraum (dem <em>Resource Server</em>). Du nickst dem Türsteher zu. Der gibt der App einen Pass. Das Stück endet immer gleich — was sich ändert, ist <em>wie</em> die App den Pass holt. Das nennt man "Grant Type".
+    </div>
+
+    <h3>Die vier Rollen — präzise</h3>
+    <ul>
+      <li><strong>Resource Owner</strong> — der Mensch, dem die Daten gehören.</li>
+      <li><strong>Client</strong> — die App, die zugreifen will. <em>Confidential</em> wenn sie ein Secret sicher halten kann (Server-Backend), <em>Public</em> wenn nicht (SPA, Mobile).</li>
+      <li><strong>Authorization Server</strong> — die Instanz, die Tokens ausstellt. Hat zwei Endpoints: <code>/authorize</code> (Browser-redirect, Login) und <code>/token</code> (Backend-Call, Token-Tausch).</li>
+      <li><strong>Resource Server</strong> — die API, die den Token akzeptiert.</li>
+    </ul>
+    <p>In der Praxis sind Auth-Server und Resource-Server oft beim selben Anbieter (Google, GitHub, Auth0), aber konzeptuell sind sie zwei.</p>
+
+    <h3>Die Grant Types — ein Entscheidungsbaum</h3>
+    <div class="flowdiag">┌─ Hat dein Client ein Backend, in dem ein Secret sicher liegt?
+│   ├─ Ja (Confidential): Authorization Code Grant + Client-Auth
+│   └─ Nein (Public, z.B. SPA, Mobile): Authorization Code Grant + PKCE
+│
+├─ Ist gar kein Mensch beteiligt (Server ↔ Server)?
+│   └─ Client Credentials Grant
+│
+├─ Hast du ein Gerät ohne Browser (CLI, Smart-TV, IoT)?
+│   └─ Device Authorization Grant (RFC 8628)
+│
+└─ Hast du schon einen Access Token, willst nur einen neuen?
+    └─ Refresh Token Grant</div>
+
+    <h3>Was du heute <em>nicht</em> mehr verwenden solltest</h3>
+    <div class="pitfall">
+      <strong>Implicit Grant</strong> (<code>response_type=token</code>): Der alte SPA-Flow, bei dem Tokens direkt im URL-Fragment ankommen. Heute durch Authorization Code + PKCE ersetzt.
+      <br><br>
+      <strong>Resource Owner Password Credentials (ROPC)</strong>: Die App fragt nach Username + Passwort und reicht sie an den Auth-Server. Wirkt wie ein direkter Login, ist aber ein OAuth-Anti-Pattern — die App sieht das Passwort, was OAuth eigentlich gerade verhindern soll.
+    </div>
+
+    <div class="spec">
+      <strong>Was sagen die Specs:</strong>
+      <ul>
+        <li>RFC 6749 (OAuth 2.0 Core) definiert beide noch — sie sind in 2012 entstanden, als Browser anders aussahen.</li>
+        <li><strong>RFC 9700</strong> (Security BCP, 2025) sagt zu ROPC wörtlich <em>"MUST NOT be used"</em>. Zur Implicit Grant: <em>"SHOULD NOT be used"</em>, außer der Server kann Token-Injection im Authorization-Response verhindern.</li>
+        <li><strong>OAuth 2.1 Draft</strong> entfernt beide komplett. Wenn du heute neu baust, behandle sie als nicht-existent.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CONCEPT 2 -->
+  <section class="card" id="concept-2">
+    <h2><span class="concept-num">2</span>Authorization Code + PKCE</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Die App schickt dich zum Auth-Server. Du loggst dich dort ein. Der Auth-Server gibt dir einen <em>Code</em> — kein Token! — den du an die App zurückgibst. Die App tauscht den Code (zusammen mit ihrem Geheimnis) am <code>/token</code>-Endpoint gegen den echten Access Token ein. <strong>PKCE</strong> ist ein zusätzlicher Beweis, den die App schon zu Beginn versprochen hat zu kennen, und den sie beim Token-Tausch einlöst — damit ein Angreifer, der den Code abfängt, ihn nicht einlösen kann.
+    </div>
+
+    <h3>Der Flow, Schritt für Schritt</h3>
+    <div class="flowdiag">App                     Browser                Auth-Server            Resource-Server
+ │                       │                       │                       │
+ │ 1. erzeuge code_verifier (random 43-128 chars)
+ │    code_challenge = BASE64URL(SHA256(code_verifier))
+ │                       │                       │
+ │ 2. redirect zum /authorize-Endpoint mit:
+ │    client_id, redirect_uri, response_type=code, state, code_challenge, code_challenge_method=S256
+ │ ─────────────────────▶│                       │
+ │                       │ ─────────────────────▶│
+ │                       │ ◀──── User loggt sich ein, willigt ein
+ │                       │                       │
+ │                       │ 3. redirect zur App mit ?code=XYZ&state=...
+ │                       │ ◀─────────────────────│
+ │ ◀─────────────────────│                       │
+ │                       │                       │
+ │ 4. POST /token mit:
+ │    grant_type=authorization_code, code=XYZ,
+ │    redirect_uri, client_id, code_verifier
+ │ ─────────────────────────────────────────────▶│
+ │                       │                       │ Server prüft:
+ │                       │                       │  SHA256(code_verifier) == code_challenge?
+ │                       │                       │  → Ja → access_token + (optional) refresh_token
+ │ ◀─────────────────────────────────────────────│
+ │                       │                       │
+ │ 5. GET /api/resource mit Authorization: Bearer access_token
+ │ ──────────────────────────────────────────────────────────────────────▶│
+ │ ◀──────────────────────────────────────────────────────────────────────│</div>
+
+    <h3>Warum PKCE existiert</h3>
+    <p>
+      Auf Mobile (vor PKCE): Eine bösartige App registriert sich für dasselbe Custom-URL-Schema wie deine echte App. Wenn das System den Auth-Code per Redirect ausliefert, fängt sie ihn ab. Ohne PKCE könnte sie damit den Token holen — sie hat ja den Code und brauchte sonst nichts. Mit PKCE: sie hat zwar den Code, aber nicht den <code>code_verifier</code>, der zur ursprünglichen <code>code_challenge</code> passt. Der Token-Tausch scheitert.
+    </p>
+
+    <h3>PKCE in 3 Zeilen Python</h3>
+    <pre><code><span class="k">import</span> secrets, hashlib, base64
+
+code_verifier = secrets.token_urlsafe(<span class="v">64</span>)   <span class="c"># ≥43 Zeichen, ≤128</span>
+code_challenge = base64.urlsafe_b64encode(
+    hashlib.sha256(code_verifier.encode()).digest()
+).decode().rstrip(<span class="s">'='</span>)              <span class="c"># BASE64URL ohne Padding</span>
+
+<span class="c"># code_challenge geht in /authorize, code_verifier in /token</span></code></pre>
+
+    <div class="spec">
+      <strong>Was sagen die Specs:</strong>
+      <ul>
+        <li><strong>RFC 7636</strong> definiert PKCE — ursprünglich (2015) für Native Apps gedacht.</li>
+        <li><strong>RFC 9700 §2.1.1</strong>: <em>"Public clients MUST use PKCE."</em> Für Confidential Clients ist es <em>RECOMMENDED</em>, weil es zusätzlich vor Code-Injection schützt. <em>"Authorization servers MUST support PKCE."</em></li>
+        <li><strong>OAuth 2.1 Draft</strong>: PKCE ist <em>"REQUIRED unless the specific requirements of Section 7.5.1 are met"</em> — also de facto Pflicht.</li>
+        <li><strong>RFC 9700 §2.1</strong> zur Redirect-URI: <em>"Authorization servers MUST utilize exact string matching"</em> — keine Wildcards, keine Pfad-Tricks.</li>
+      </ul>
+    </div>
+
+    <div class="pitfall">
+      <strong>Stolperstein:</strong> <code>state</code> nicht vergessen! Das ist ein zufälliger Wert, den die App im <code>/authorize</code>-Request mitschickt und im Redirect zurückbekommt. Stimmt der zurückgegebene Wert nicht mit dem gespeicherten überein, ist der Request gefälscht (CSRF). PKCE schützt den <em>Code</em>, <code>state</code> schützt die <em>Redirect-Browser-Session</em>. Du brauchst beide.
+    </div>
+  </section>
+
+  <!-- CONCEPT 3 -->
+  <section class="card" id="concept-3">
+    <h2><span class="concept-num">3</span>OpenID Connect (OIDC)</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> OAuth gibt dir einen <em>Aufkleber</em>, der sagt "diese App darf für Alice das und das tun". OIDC legt einen <em>Personalausweis</em> dazu, der sagt "und übrigens: ich, der Auth-Server, bestätige dir, dass das hier wirklich Alice ist". Der Aufkleber ist der <strong>Access Token</strong>. Der Personalausweis ist der <strong>ID Token</strong>.
+    </div>
+
+    <h3>Der eine Schalter, der OAuth zu OIDC macht</h3>
+    <p>Du machst einen ganz normalen Authorization Code Flow — und schreibst <code>scope=openid</code> in den Request. Mehr nicht. Der Auth-Server gibt dir dann zusätzlich zum Access Token einen <strong>ID Token</strong> zurück. Das ist OIDC.</p>
+
+    <pre><code>GET /authorize?
+    response_type=code
+    &amp;client_id=...
+    &amp;redirect_uri=...
+    &amp;scope=<span class="s">openid profile email</span>     <span class="c">← der "openid" scope schaltet OIDC ein</span>
+    &amp;state=...
+    &amp;nonce=...                  <span class="c">← in OIDC empfohlen, in Implicit-Flow REQUIRED</span>
+    &amp;code_challenge=...
+    &amp;code_challenge_method=S256</code></pre>
+
+    <h3>ID Token vs Access Token — der zentrale Unterschied</h3>
+    <div class="truth">
+      <strong>ID Token:</strong> für die App selbst, um zu wissen <em>wer der User ist</em>. Immer ein JWT. Validiert die App selbst (Signatur prüfen, Issuer, Audience, Expiry, Nonce).
+      <br><br>
+      <strong>Access Token:</strong> für den Resource-Server, um Zugriff zu bekommen. Format ist nicht festgelegt — kann JWT sein, kann opak sein. Validiert der Resource-Server (lokal als JWT, oder remote per Introspection-Endpoint).
+    </div>
+
+    <h3>Pflicht-Claims im ID Token</h3>
+    <p>Per OIDC Core 1.0 §2 muss jeder ID Token mindestens enthalten:</p>
+    <ul>
+      <li><code>iss</code> — Issuer Identifier (URL des Auth-Servers).</li>
+      <li><code>sub</code> — Subject, eindeutige User-ID innerhalb des Issuers. <strong>Niemals neu zugewiesen.</strong></li>
+      <li><code>aud</code> — Audience, muss die <code>client_id</code> deiner App enthalten.</li>
+      <li><code>exp</code> — Expiry. Nach diesem Zeitpunkt darf der Token nicht akzeptiert werden.</li>
+      <li><code>iat</code> — Issued At, Zeitstempel der Ausstellung.</li>
+    </ul>
+    <p>Optional: <code>auth_time</code>, <code>nonce</code>, <code>acr</code> (Authentication Context Class), <code>amr</code> (Authentication Methods).</p>
+
+    <div class="pitfall">
+      <strong>Goldener Validierungs-Fehler:</strong> ID Token nur "decoden" und den Inhalt vertrauen. Falsch! Der ID Token ist nur dann eine Aussage des Auth-Servers, wenn du seine <strong>Signatur</strong> mit dem öffentlichen Schlüssel des Auth-Servers prüfst, <code>iss</code> matched, <code>aud</code> deine <code>client_id</code> enthält, <code>exp</code> in der Zukunft liegt, und (falls geschickt) <code>nonce</code> mit deinem gespeicherten Wert übereinstimmt.
+    </div>
+
+    <h3>Der UserInfo-Endpoint</h3>
+    <p>Per OIDC Core 1.0 §5.3: ein zusätzlicher Endpoint, an den du den Access Token schickst, und der dir die Claims des Users zurückliefert (Name, E-Mail, …). Praktisch, wenn du Profildaten brauchst, ohne jede einzelne in den ID Token zu pressen.</p>
+    <pre><code>GET /userinfo HTTP/1.1
+Host: example.com
+Authorization: Bearer <span class="v">access_token_xyz</span>
+
+→ 200 OK
+{
+  <span class="s">"sub"</span>: <span class="s">"248289761001"</span>,
+  <span class="s">"name"</span>: <span class="s">"Jane Doe"</span>,
+  <span class="s">"email"</span>: <span class="s">"jane@example.com"</span>,
+  <span class="s">"email_verified"</span>: <span class="v">true</span>
+}</code></pre>
+
+    <div class="spec">
+      <strong>Was sagen die Specs:</strong>
+      <ul>
+        <li><strong>OIDC Core 1.0</strong> definiert ID Token, UserInfo, Standard-Claims, Discovery.</li>
+        <li><strong>OIDC Discovery 1.0</strong>: jeder OIDC-Provider muss <code>/.well-known/openid-configuration</code> bereitstellen — eine JSON mit allen URLs, Algorithmen, Scopes. Schaff dir die immer als ersten Schritt an.</li>
+        <li><strong>OIDC Core 1.0 §3.1.3.7</strong> listet die genauen ID-Token-Validierungs-Schritte. Lies das einmal komplett.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CONCEPT 4 -->
+  <section class="card" id="concept-4">
+    <h2><span class="concept-num">4</span>JWTs &amp; Token-Validierung</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Ein JWT ist ein Brief mit drei Teilen, die durch Punkte getrennt sind: <em>Umschlag-Aufdruck</em> (Header), <em>Inhalt</em> (Payload), und <em>Wachssiegel</em> (Signature). Wer das Siegel fälschen will, braucht den geheimen Stempel des Absenders. Wer den Brief nur lesen will, braucht nichts — der Inhalt ist nur Base64-kodiert, nicht verschlüsselt.
+    </div>
+
+    <h3>Aufbau eines JWT</h3>
+    <pre><code>eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhbGljZSIsImV4cCI6MTcwMDAwMDAwMH0.signature_bytes
+└──── Header ────┘ └────────────── Payload ──────────────┘ └── Signature ──┘
+
+Header  (Base64URL-decoded): {<span class="s">"alg"</span>: <span class="s">"RS256"</span>}
+Payload (Base64URL-decoded): {<span class="s">"sub"</span>: <span class="s">"alice"</span>, <span class="s">"exp"</span>: <span class="v">1700000000</span>}
+Signature: RSA-SHA256(<span class="s">"header.payload"</span>, <span class="v">private_key</span>)</code></pre>
+
+    <p>Der Payload ist <strong>Base64URL, nicht verschlüsselt</strong>. Jeder, der den Token sieht, kann ihn lesen. Der Wert eines JWT liegt in der <strong>Signatur</strong>: nur wer den privaten Schlüssel hat, kann gültige Tokens erzeugen.</p>
+
+    <h3>Validierung — die ganze Liste</h3>
+    <ol>
+      <li>Token in 3 Teile splitten, Header + Payload als JSON parsen.</li>
+      <li><strong>Algorithmus prüfen</strong>: ist <code>alg</code> in deiner Allowlist? <em>Niemals</em> einfach den Wert aus dem Header übernehmen.</li>
+      <li><strong>Signing Key holen</strong>: aus deinem konfigurierten Set, oder über <code>jwks_uri</code> + <code>kid</code>. <em>Niemals</em> Schlüssel-URL aus dem Token lesen.</li>
+      <li><strong>Signatur prüfen</strong> mit dem richtigen Algorithmus. Erst <em>nach</em> erfolgreicher Prüfung gilt der Payload.</li>
+      <li><strong>Claims prüfen</strong>: <code>iss</code> matched? <code>aud</code> enthält dich? <code>exp</code> in der Zukunft? <code>nbf</code> (not before) in der Vergangenheit? <code>nonce</code> matched (falls gesetzt)?</li>
+    </ol>
+
+    <h3>Die drei klassischen Fallen</h3>
+
+    <h4>1. <code>alg=none</code></h4>
+    <p>Frühe JWT-Bibliotheken akzeptierten Token mit <code>"alg":"none"</code> als gültig — ohne Signatur-Prüfung. Ein Angreifer setzt <code>alg=none</code>, lässt die Signatur weg, und die Library nickt durch.</p>
+    <div class="spec">
+      <strong>RFC 8725 §3.1:</strong> <em>"The 'none' algorithm should only be used when the JWT is cryptographically protected by other means."</em> Praktisch heißt das: in deiner App-Validation <strong>niemals</strong> akzeptieren. Whitelist deine erwarteten Algorithmen explizit.
+    </div>
+
+    <h4>2. RS256 ↔ HS256 Confusion</h4>
+    <p>Dein Auth-Server signiert mit RSA (<code>RS256</code>). Du verifizierst mit dem öffentlichen Schlüssel. Ein Angreifer ändert den Header zu <code>HS256</code> und benutzt deinen <em>öffentlichen RSA-Schlüssel</em> als HMAC-Geheimnis. Eine schlecht geschriebene Library signiert die HMAC erfolgreich mit dem öffentlichen Schlüssel — und verifiziert auch erfolgreich, weil sie denselben Schlüssel benutzt. Result: Angreifer kann beliebige Tokens fälschen.</p>
+    <div class="spec">
+      <strong>RFC 8725 §3.2 / §3.5:</strong> <em>"Libraries MUST enable the caller to specify a supported set of algorithms and MUST NOT use any other algorithms."</em> Konkret: konfiguriere deine Library so, dass <strong>nur</strong> <code>RS256</code> (oder was auch immer dein Provider benutzt) erlaubt ist. Niemals "decoder, der den Header glaubt".
+    </div>
+
+    <h4>3. Falscher Schlüssel</h4>
+    <p>Token mit Issuer <code>https://evil.com</code> — du holst den Schlüssel von <code>https://evil.com/.well-known/jwks</code>, weil dein Code blind dem <code>iss</code>-Claim folgt. Der Angreifer hat den Token mit seinem eigenen Schlüssel signiert, alles validiert "korrekt", er ist drin.</p>
+    <div class="spec">
+      <strong>RFC 8725 §3.11:</strong> <em>"Applications must validate that cryptographic keys belong to the claimed issuer."</em> Sprich: deine Liste der akzeptierten Issuer ist <em>statisch konfiguriert</em>, und nur für die holst du Keys.
+    </div>
+
+    <h3>Token-Storage im Browser — kurzer Exkurs</h3>
+    <p>Wenn du eine Web-App schreibst und den Token im Browser speicherst:</p>
+    <ul>
+      <li><strong>localStorage:</strong> per JS lesbar → XSS-Lücke = Token-Diebstahl. Schlecht für sensible Tokens.</li>
+      <li><strong>HttpOnly + Secure + SameSite=Strict Cookie:</strong> per JS nicht lesbar, automatisch mitgesendet. Besser, aber CSRF-bedingt nur mit zusätzlichem CSRF-Token oder Same-Origin-Policy einsetzbar.</li>
+      <li><strong>Session-Memory (in JS-Variable, kein Storage):</strong> verschwindet bei Reload. Best-Practice für SPA-Access-Tokens — dafür Refresh-Token-Rotation per HttpOnly-Cookie.</li>
+    </ul>
+
+    <div class="pitfall">
+      <strong>Niemand entscheidet das einmal richtig.</strong> Speicher-Strategie hängt davon ab: ist es ein Access Token (kurzlebig) oder Refresh Token (langlebig)? Hast du ein Backend? Nutzt du PKCE? Die ehrliche Antwort: lies <a href="https://datatracker.ietf.org/doc/html/rfc9700">RFC 9700</a> §4.4–§4.6 und entscheide für deinen Fall.
+    </div>
+  </section>
+
+  <!-- READING THE STANDARDS -->
+  <section class="card" id="read-rfcs">
+    <h2>📖 Wie liest man die OAuth-Standards?</h2>
+
+    <div class="vivid">
+      <strong>Bild:</strong> Eine RFC ist kein Roman. Du musst nicht von Seite 1 bis 80 lesen. Sie ist ein Lexikon mit klaren Sektionen — wenn du weißt, welche Sektion welche Frage beantwortet, sparst du dir 70 % Lesezeit.
+    </div>
+
+    <h3>Anatomie einer OAuth-RFC</h3>
+    <ul>
+      <li><strong>Abstract</strong> — 1 Absatz, was das Dokument tut. Immer lesen.</li>
+      <li><strong>Status of This Memo</strong> — Standards-Track, Best Current Practice, Informational? Beeinflusst, wie verbindlich die Aussagen sind.</li>
+      <li><strong>§1 Introduction</strong> — Motivation. Beim ersten Mal lesen, später überspringbar.</li>
+      <li><strong>§2 Terminology / Conventions</strong> — Definitionen. <strong>Immer</strong> kurz durchfliegen, sonst missverstehst du den Rest.</li>
+      <li><strong>Hauptkapitel</strong> — die eigentliche Spec. Hier sind die <code>MUST</code>/<code>SHOULD</code>/<code>MAY</code>-Aussagen (RFC 2119 / 8174 — die Schlüsselwörter sind nicht-zufällig wichtig).</li>
+      <li><strong>Security Considerations</strong> — fast immer das nützlichste Kapitel. Explizite Angriffsbeschreibungen und Gegenmaßnahmen.</li>
+      <li><strong>IANA Considerations</strong> — überspringbar, außer du registrierst eigene Werte.</li>
+      <li><strong>Appendices</strong> — Beispiele, oft sehr hilfreich.</li>
+    </ul>
+
+    <h3>RFC 2119 — die magischen Schlüsselwörter</h3>
+    <p>Wenn du in einer RFC <code>MUST</code>, <code>SHOULD</code>, oder <code>MAY</code> in Großbuchstaben siehst, sind das <em>technische Begriffe</em>:</p>
+    <ul>
+      <li><code>MUST</code> / <code>REQUIRED</code> / <code>SHALL</code> — Pflicht. Wer's nicht macht, ist nicht-konform.</li>
+      <li><code>MUST NOT</code> / <code>SHALL NOT</code> — Verbot. Wer's macht, ist nicht-konform.</li>
+      <li><code>SHOULD</code> / <code>RECOMMENDED</code> — sehr empfohlen, Ausnahmen brauchen Begründung.</li>
+      <li><code>SHOULD NOT</code> / <code>NOT RECOMMENDED</code> — abgeraten, Ausnahmen brauchen Begründung.</li>
+      <li><code>MAY</code> / <code>OPTIONAL</code> — frei wählbar.</li>
+    </ul>
+
+    <h3>IETF (OAuth) vs OpenID Foundation (OIDC) — zwei Welten</h3>
+    <p>Wichtig zu wissen: OAuth-Standards entstehen in der <strong>IETF OAuth Working Group</strong>, dokumentiert als RFC. OIDC und Verwandte (CIBA, FAPI) entstehen bei der <strong>OpenID Foundation</strong>, dokumentiert auf <code>openid.net</code>. Die Prozesse, Versionierung und Naming-Conventions sind anders. Die OAuth-RFCs auf <code>datatracker.ietf.org</code>, OIDC-Specs auf <code>openid.net/specs</code>.</p>
+
+    <h3>Der Aaron-Parecki-Trick</h3>
+    <p>Aaron Parecki ist Co-Autor mehrerer OAuth-RFCs (PKCE, Device Flow, OAuth 2.1) und der Mensch hinter <a href="https://oauth.net">oauth.net</a>. Wenn dir eine RFC zu trocken ist: such den passenden Talk oder Blog-Post von ihm — die sind exzellent und didaktisch näher an dem, was du dir wünschst. Aber: nutze sie als Einstieg, nicht als Ersatz für die RFC. Die Wahrheit steht im Standard.</p>
+  </section>
+
+  <!-- EXERCISES -->
+  <section class="card" id="exercises">
+    <h2>🎯 Übungen</h2>
+    <p>Mehrere Übungen sind <em>Lese-Übungen</em> — direkt in den Standards. Das ist Absicht. Diejenigen, die OAuth gut können, haben die RFCs gelesen.</p>
+
+    <details class="exercise">
+      <summary>Übung 1 · Rollen-Quiz <span class="level-pill easy">Einsteiger</span></summary>
+      <div class="exercise-body">
+        <p><strong>Szenario:</strong> Du baust eine Mobile-App "ReiseTracker", die deine Google-Maps-Verlaufsdaten lesen soll. Beschrifte:</p>
+        <ol>
+          <li>Wer ist der <em>Resource Owner</em>?</li>
+          <li>Wer ist der <em>Client</em>? Confidential oder Public?</li>
+          <li>Wer ist der <em>Authorization Server</em>?</li>
+          <li>Wer ist der <em>Resource Server</em>?</li>
+          <li>Welcher Grant Type passt?</li>
+        </ol>
+        <p><strong>Lösung:</strong></p>
+        <ol>
+          <li>Du, der Nutzer.</li>
+          <li>Die ReiseTracker-App. <strong>Public</strong>, weil sie auf einem Mobile-Gerät läuft und kein Secret sicher halten kann.</li>
+          <li>Google Accounts (<code>accounts.google.com</code>).</li>
+          <li>Google Maps API.</li>
+          <li><strong>Authorization Code + PKCE</strong> (RFC 9700: Public Clients MUST use PKCE).</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 2 · PKCE selbst rechnen <span class="level-pill easy">Einsteiger</span></summary>
+      <div class="exercise-body">
+        <p><strong>Aufgabe:</strong> Schreibe in deiner Lieblingssprache eine Funktion <code>pkce_pair()</code>, die ein Tupel <code>(code_verifier, code_challenge)</code> zurückgibt — gemäß RFC 7636: <code>code_verifier</code> ist 43–128 Zeichen Base64URL, <code>code_challenge = BASE64URL(SHA256(code_verifier))</code> ohne Padding.</p>
+        <p><strong>Lösung (Python):</strong></p>
+        <pre><code><span class="k">import</span> secrets, hashlib, base64
+
+<span class="k">def</span> pkce_pair():
+    verifier = secrets.token_urlsafe(<span class="v">64</span>)[:<span class="v">128</span>]
+    challenge = base64.urlsafe_b64encode(
+        hashlib.sha256(verifier.encode()).digest()
+    ).decode().rstrip(<span class="s">'='</span>)
+    <span class="k">return</span> verifier, challenge</code></pre>
+        <p><strong>Test:</strong> Verifier muss reines Base64URL-Alphabet sein (<code>A-Z a-z 0-9 - _</code>). Challenge muss exakt 43 Zeichen lang sein (256 Bit / 6 Bit-pro-Char ≈ 43, ohne Padding).</p>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 3 · ID Token "decoden" und validieren <span class="level-pill med">Mittel</span></summary>
+      <div class="exercise-body">
+        <p><strong>Aufgabe:</strong> Öffne <a href="https://jwt.io" target="_blank" rel="noopener">jwt.io</a>. Paste einen beliebigen Beispiel-ID-Token (oder generiere einen). Lies Header und Payload. Liste die fünf Pflicht-Claims aus OIDC Core 1.0 §2 (<code>iss</code>, <code>sub</code>, <code>aud</code>, <code>exp</code>, <code>iat</code>). Welcher fehlt im Beispiel? Welche optionalen Claims sind da?</p>
+        <p><strong>Lösung:</strong> Antwort variiert je nach Token. Ziel: du erkennst die Claim-Namen wieder und kannst zwischen Pflicht- und optional-Claims unterscheiden.</p>
+        <p><strong>Folge-Frage:</strong> Würdest du dem Inhalt vertrauen, allein weil <code>iat</code> aktuell aussieht? <em>Nein</em> — ohne Signatur-Prüfung ist der Payload pure Behauptung.</p>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 4 · Lese-Übung: RFC 9700 §2.1 <span class="level-pill med">Mittel</span></summary>
+      <div class="exercise-body">
+        <p><strong>Aufgabe:</strong> Lies <a href="https://datatracker.ietf.org/doc/html/rfc9700#section-2.1" target="_blank" rel="noopener">RFC 9700 §2.1 (Protecting Redirect-Based Flows)</a>. Beantworte mit eigenen Worten:</p>
+        <ol>
+          <li>Welche Art von String-Matching MUST der Auth-Server für Redirect-URIs benutzen?</li>
+          <li>Welche zwei Schutzmaßnahmen MUST/SHOULD der Client gegen CSRF anwenden?</li>
+          <li>Was sagt der BCP zum Thema "open redirectors"?</li>
+        </ol>
+        <p><strong>Lösung:</strong> Antworten direkt aus dem Text (Spec-Lesen ist die Übung). Insb. die exakte String-Matching-Regel ist überraschend strikt.</p>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 5 · alg=none demolieren <span class="level-pill med">Mittel</span></summary>
+      <div class="exercise-body">
+        <p><strong>Aufgabe:</strong> Nimm einen JWT (z. B. von jwt.io). Ändere den Header zu <code>{"alg":"none"}</code>, base64url-encode neu, lasse die Signatur leer. Schreibe in Python einen <em>kaputten</em> Validator, der den Token akzeptiert, und einen <em>korrekten</em>, der ihn ablehnt.</p>
+        <p><strong>Lösung-Skizze (kaputt):</strong></p>
+        <pre><code><span class="k">import</span> base64, json
+<span class="k">def</span> validate_bad(token):
+    h, p, s = token.split(<span class="s">'.'</span>)
+    header = json.loads(base64.urlsafe_b64decode(h + <span class="s">'='</span>*(<span class="v">4</span>-<span class="k">len</span>(h)%<span class="v">4</span>)))
+    <span class="k">if</span> header[<span class="s">'alg'</span>] == <span class="s">'none'</span>:
+        <span class="k">return</span> json.loads(base64.urlsafe_b64decode(p + <span class="s">'='</span>*(<span class="v">4</span>-<span class="k">len</span>(p)%<span class="v">4</span>)))   <span class="c"># 🚨 vertraut blind</span>
+    <span class="c"># … sonst Signatur prüfen …</span></code></pre>
+        <p><strong>Korrekt:</strong> Algorithmen-Whitelist <em>vor</em> dem Header-Lesen anwenden:</p>
+        <pre><code>ALLOWED = {<span class="s">'RS256'</span>, <span class="s">'ES256'</span>}
+<span class="k">if</span> header[<span class="s">'alg'</span>] <span class="k">not in</span> ALLOWED:
+    <span class="k">raise</span> ValueError(<span class="s">"Algorithmus nicht erlaubt"</span>)</code></pre>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 6 · OIDC Discovery erkunden <span class="level-pill hard">Fortgeschritten</span></summary>
+      <div class="exercise-body">
+        <p><strong>Aufgabe:</strong> Hol dir die OIDC-Discovery-Doc von Google: <a href="https://accounts.google.com/.well-known/openid-configuration" target="_blank" rel="noopener">https://accounts.google.com/.well-known/openid-configuration</a>. Beantworte:</p>
+        <ol>
+          <li>Wo ist der <code>authorization_endpoint</code>, der <code>token_endpoint</code>, der <code>userinfo_endpoint</code>?</li>
+          <li>Welche <code>id_token_signing_alg_values_supported</code> bietet Google?</li>
+          <li>Welche <code>response_types_supported</code> sind aufgelistet — und welche <em>solltest</em> du heute meiden?</li>
+          <li>Wo ist der <code>jwks_uri</code>? Hol die JWKs von dort und finde das passende <code>kid</code> für einen ID Token, den du mal in der Praxis bekommen hast.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="exercise">
+      <summary>Übung 7 · Architektur-Entscheidung <span class="level-pill hard">Fortgeschritten</span></summary>
+      <div class="exercise-body">
+        <p><strong>Szenario:</strong> Du baust eine SPA in React + ein Backend in Python (FastAPI). Beide reden mit einem Auth-Provider (Auth0/Keycloak/etc.). Der User soll sich einloggen, dann sollen API-Calls vom Backend an einen <em>dritten</em> Service (z. B. eine eigene Microservice-API) im Namen des Users laufen.</p>
+        <p>Beantworte mit Begründung:</p>
+        <ol>
+          <li>Welcher Grant Type? Wo läuft PKCE?</li>
+          <li>Wo wird der Access Token gespeichert: SPA-Memory, HttpOnly-Cookie, localStorage?</li>
+          <li>Wie kommt das Backend an den Token, um damit den Microservice anzurufen — durchreichen, Token-Exchange, eigener Token?</li>
+          <li>Welche RFCs zitierst du für deine Entscheidung?</li>
+        </ol>
+        <p><strong>Lösungs-Skizze:</strong></p>
+        <ul>
+          <li>(1) Authorization Code + PKCE in der SPA. Public Client.</li>
+          <li>(2) Refresh Token in HttpOnly-Cookie (BFF-Pattern), Access Token in SPA-Memory. RFC 9700 §4.4 zur Rotation.</li>
+          <li>(3) Drei Optionen: durchreichen (einfach, aber Audience-Verletzung wenn der MS einen anderen <code>aud</code> erwartet), Token-Exchange (RFC 8693), oder eigener Service-Token mit Client Credentials (wenn der MS-Call user-unabhängig ist).</li>
+          <li>(4) RFC 6749, RFC 7636, RFC 9700, evtl. RFC 8693 für Token-Exchange.</li>
+        </ul>
+        <p>Es gibt nicht die eine Antwort — die Übung ist, die Trade-offs sauber zu argumentieren.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>🌙 Verloren? Übung fehlt? RFC unklar?</h2>
+    <p>
+      OAuth ist tief, und der Träumer baut weiter. Wenn dir eine konkrete Übung fehlt,
+      ein Detail unklar ist, oder du eine echte Anwendungsfrage hast: GitHub Issue auf.
+    </p>
+    <a class="btn" href="https://github.com/JereIsThere/claude-learnings/issues/new?title=%5BOAuth%5D+&labels=oauth-2" target="_blank" rel="noopener">
+      ✨ Übung anfordern / Issue öffnen
+    </a>
+    <a class="btn secondary" href="https://github.com/JereIsThere/claude-learnings/issues?q=label%3Aoauth-2" target="_blank" rel="noopener">
+      Bestehende Issues
+    </a>
+    <p class="sources">
+      <strong>Quellen (alle Aussagen verifiziert):</strong><br/>
+      <a href="https://datatracker.ietf.org/doc/html/rfc6749" target="_blank" rel="noopener">RFC 6749 — OAuth 2.0</a> ·
+      <a href="https://datatracker.ietf.org/doc/html/rfc7636" target="_blank" rel="noopener">RFC 7636 — PKCE</a> ·
+      <a href="https://datatracker.ietf.org/doc/html/rfc9700" target="_blank" rel="noopener">RFC 9700 — OAuth Security BCP</a> ·
+      <a href="https://datatracker.ietf.org/doc/html/draft-ietf-oauth-v2-1" target="_blank" rel="noopener">OAuth 2.1 Draft</a> ·
+      <a href="https://openid.net/specs/openid-connect-core-1_0.html" target="_blank" rel="noopener">OIDC Core 1.0</a> ·
+      <a href="https://datatracker.ietf.org/doc/html/rfc7519" target="_blank" rel="noopener">RFC 7519 — JWT</a> ·
+      <a href="https://datatracker.ietf.org/doc/html/rfc8725" target="_blank" rel="noopener">RFC 8725 — JWT BCP</a>
+    </p>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <p class="signature">— Der Träumer 🌙</p>
+  <p style="margin-top: 6px;">Lies eine RFC. Heute. Auch nur fünf Seiten. Standards sind weniger trocken, als du denkst — und sie haben fast immer recht.</p>
+</footer>
+
+</body>
+</html>
