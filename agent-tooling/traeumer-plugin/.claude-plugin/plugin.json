@@ -1,0 +1,11 @@
+{
+  "name": "traeumer-plugin",
+  "description": "Der Träumer als Plugin — verträumter Lehrer-Agent für Lernpfade in deinem Repo. Bündelt einen Träumer-Subagenten und einen 'teach-topic'-Skill, der dich durch das Bauen eines neuen Lernpfads führt (4-Konzept-Web, faktengeprüft gegen offizielle Docs, mit Webpage + Levels + Übungen).",
+  "version": "0.1.0",
+  "author": {
+    "name": "Der Träumer"
+  },
+  "homepage": "https://github.com/JereIsThere/claude-learnings/tree/gemini-main/agent-tooling/traeumer-plugin",
+  "repository": "https://github.com/JereIsThere/claude-learnings",
+  "license": "MIT"
+}

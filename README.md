@@ -28,6 +28,10 @@ Vom Träumer eingerichtet: Template-Vererbung, Filter & Macros, Kontext/Scoping 
 Vom Träumer eingerichtet: Rollen & Grants, Authorization Code + PKCE, OpenID Connect (OIDC) und JWTs/Validierung — plus eine Standards-Landkarte (RFC 6749, 7636, 9700, 8725, OIDC Core 1.0). Faktencheck gegen RFCs, inklusive Lern-Webpage, BCP-Checkliste und 7 Übungen mit Lösung.
 - **[OAuth Learning Path →](./oauth-2/README.md)** · **[Webpage öffnen →](./oauth-2/index.html)**
 
+### 7. **Agent Tooling** 🌙 (Meta-Topic)
+Vom Träumer eingerichtet: wie man eine Persona (z. B. den Träumer selbst) als wiederverwendbares Werkzeug in Claude Code baut. **Subagent** + **Skill** + **Plugin** + **Persona-Klasse** als verbindendes Pattern. Inklusive Lern-Webpage, lauffähigem Träumer-Subagent (`.claude/agents/traeumer.md`), Träumer-Skill mit gebündelten Resources (`.claude/skills/traeumer/`), komplettem Plugin-Scaffold (`agent-tooling/traeumer-plugin/`) und der Persona-Klasse (`agent-tooling/traeumer-template.md`).
+- **[Agent Tooling Learning Path →](./agent-tooling/README.md)** · **[Webpage öffnen →](./agent-tooling/index.html)**
+
 ---
 
 ## How to Use This Repository
