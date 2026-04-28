@@ -32,6 +32,10 @@ Vom Träumer eingerichtet: Rollen & Grants, Authorization Code + PKCE, OpenID Co
 Vom Träumer eingerichtet: wie man eine Persona (z. B. den Träumer selbst) als wiederverwendbares Werkzeug in Claude Code baut. **Subagent** + **Skill** + **Plugin** + **Persona-Klasse** als verbindendes Pattern. Inklusive Lern-Webpage, lauffähigem Träumer-Subagent (`.claude/agents/traeumer.md`), Träumer-Skill mit gebündelten Resources (`.claude/skills/traeumer/`), komplettem Plugin-Scaffold (`agent-tooling/traeumer-plugin/`) und der Persona-Klasse (`agent-tooling/traeumer-template.md`).
 - **[Agent Tooling Learning Path →](./agent-tooling/README.md)** · **[Webpage öffnen →](./agent-tooling/index.html)**
 
+### 8. **Advanced Art Guide** ✦ (von Aria)
+Kuratiert von Aria: **Farbtheorie** (20 Topics: Value, Warm/Kalt, Simultankontrast, Gamut, SSS, Hauttöne u.v.m.), **Manga zeichnen** (Proportionen, Inking, Panel-Layout, Screentones, Workflow) und **Schneller & Fertiger werden** (Deliberate Practice, Thumbnail-First, 3-Pass-Methode, Feedback-Loops). Kein Anfänger-Material — richtet sich an Leute die schon zeichnen können und formelle Lücken schließen wollen.
+- **[Webpage öffnen →](./art-advanced/index.html)**
+
 ---
 
 ## How to Use This Repository
@@ -70,5 +74,5 @@ topic/
 
 ---
 
-**Last Updated**: 2026-04-25  
+**Last Updated**: 2026-04-28  
 **Repository**: [GitHub - claude-learnings](https://github.com)
