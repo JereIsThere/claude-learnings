@@ -4,21 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Claude Learnings — Alle Themen</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230f1230'/><text x='16' y='23' text-anchor='middle' font-size='19'>📚</text></svg>">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Inter:wght@300;400;500;600&display=swap');
 
     :root {
-      --night:   #0f1230;
-      --night-2: #1a1d4a;
-      --paper:   #f6f4ee;
-      --ink:     #1c1c2e;
-      --muted:   #6b6883;
-      --moon:    #f5d76e;
-      --lilac:   #b39bd8;
-      --rose:    #e8a4b8;
-      --mint:    #7fc8a9;
-      --radius:  16px;
-      --shadow:  0 12px 40px -16px rgba(15,18,48,0.40);
+      --bg:     #f9f8f6;
+      --white:  #ffffff;
+      --ink:    #111118;
+      --muted:  #6b6878;
+      --border: #e4e2dc;
+      --night:  #0f1230;
+      --moon:   #f5d76e;
+      --radius: 14px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,121 +24,94 @@
 
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: var(--paper);
+      background: var(--bg);
       color: var(--ink);
-      line-height: 1.65;
+      line-height: 1.6;
       min-height: 100vh;
     }
 
-    /* ── Night-sky header ── */
-    .skyline {
-      position: relative;
-      background:
-        radial-gradient(ellipse 60% 80% at 80% 10%, rgba(245,215,110,0.18) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 60% at 15% 30%, rgba(179,155,216,0.30) 0%, transparent 60%),
-        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(232,164,184,0.18) 0%, transparent 70%),
-        linear-gradient(180deg, var(--night) 0%, var(--night-2) 100%);
-      color: var(--paper);
-      padding: 96px 24px 130px;
-      overflow: hidden;
-    }
-
-    .skyline::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        radial-gradient(1px 1px at 10% 15%, white 50%, transparent 51%),
-        radial-gradient(1.5px 1.5px at 25% 65%, white 50%, transparent 51%),
-        radial-gradient(2px 2px at 60% 20%, white 50%, transparent 51%),
-        radial-gradient(1px 1px at 75% 50%, white 50%, transparent 51%),
-        radial-gradient(1px 1px at 88% 10%, white 50%, transparent 51%),
-        radial-gradient(1.5px 1.5px at 42% 40%, white 50%, transparent 51%),
-        radial-gradient(1px 1px at 6% 78%, white 50%, transparent 51%),
-        radial-gradient(1px 1px at 93% 75%, white 50%, transparent 51%),
-        radial-gradient(2px 2px at 52% 88%, white 50%, transparent 51%),
-        radial-gradient(1px 1px at 35% 12%, white 50%, transparent 51%),
-        radial-gradient(1px 1px at 68% 60%, white 50%, transparent 51%),
-        radial-gradient(1.5px 1.5px at 82% 30%, white 50%, transparent 51%);
-      opacity: 0.65;
-      pointer-events: none;
+    /* ── Header ── */
+    header {
+      background: var(--night);
+      color: #fff;
+      padding: 72px 24px 64px;
     }
 
     .container {
       max-width: 960px;
       margin: 0 auto;
-      position: relative;
-      z-index: 1;
     }
-
-    .moon-deco {
-      position: absolute;
-      top: 56px; right: 40px;
-      width: 90px; height: 90px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #fff5d0 0%, #f5d76e 60%, #c89c2a 100%);
-      box-shadow: 0 0 60px 8px rgba(245,215,110,0.25);
-    }
-    @media (max-width: 640px) { .moon-deco { width: 56px; height: 56px; top: 28px; right: 20px; } }
 
     .eyebrow {
       display: inline-block;
-      font-size: 0.82rem;
-      letter-spacing: 0.18em;
+      font-size: 0.75rem;
+      letter-spacing: 0.20em;
       text-transform: uppercase;
       color: var(--moon);
-      margin-bottom: 16px;
-      font-weight: 500;
+      font-weight: 600;
+      margin-bottom: 18px;
     }
 
     h1 {
       font-family: 'Fraunces', serif;
-      font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+      font-size: clamp(2rem, 5vw, 3.4rem);
       font-weight: 700;
       line-height: 1.1;
       letter-spacing: -0.02em;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .lead {
-      font-size: 1.1rem;
-      max-width: 580px;
-      color: rgba(246,244,238,0.80);
+      font-size: 1rem;
+      max-width: 520px;
+      color: rgba(255,255,255,0.60);
       font-weight: 300;
+      line-height: 1.7;
     }
 
-    /* ── Main body ── */
+    /* ── Main ── */
     main {
-      padding: 0 24px 100px;
-      margin-top: -64px;
-      position: relative;
-      z-index: 2;
+      padding: 56px 24px 100px;
     }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 48px 0 16px;
+    }
+    .section-label:first-child { margin-top: 0; }
 
     /* ── Topic grid ── */
     .topic-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+      gap: 16px;
     }
 
+    /* ── Card ── */
     .topic-card {
-      background: white;
+      background: var(--white);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 28px 30px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(15,18,48,0.05);
+      padding: 24px 26px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      transition: transform 0.18s, box-shadow 0.18s;
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
     }
     .topic-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 20px 50px -16px rgba(15,18,48,0.50);
+      transform: translateY(-4px);
+      border-color: #c8c5be;
+      box-shadow: 0 12px 32px -8px rgba(15,18,48,0.14);
     }
 
     .topic-num {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 600;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -149,102 +120,81 @@
 
     .topic-card h2 {
       font-family: 'Fraunces', serif;
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 700;
-      line-height: 1.25;
+      line-height: 1.3;
       color: var(--night);
     }
 
     .topic-card p {
-      font-size: 0.87rem;
+      font-size: 0.84rem;
       color: var(--muted);
-      line-height: 1.6;
+      line-height: 1.65;
       flex: 1;
     }
 
+    /* ── Tags ── */
     .tag-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 5px;
     }
 
     .tag {
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      padding: 3px 9px;
+      padding: 2px 8px;
       border-radius: 20px;
       background: #f0eef8;
       color: var(--muted);
     }
-    .tag.moon  { background: #fdf8e8; color: #a07a10; }
-    .tag.web   { background: #eef5f0; color: #3d7a5b; }
-    .tag.aria  { background: #2a1a12; color: #e07c5a; }
+    .tag.moon { background: #fdf7e2; color: #9a7010; }
+    .tag.aria { background: #fdf0ea; color: #c0532a; }
+    .tag.green { background: #eef5f0; color: #3d7a5b; }
 
+    /* ── Buttons ── */
     .link-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 4px;
+      gap: 7px;
+      margin-top: 2px;
     }
 
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 8px;
+      padding: 5px 13px;
+      border-radius: 7px;
       text-decoration: none;
-      transition: opacity 0.15s;
+      transition: opacity 0.14s;
     }
-    .btn:hover { opacity: 0.80; }
-    .btn.primary {
-      background: var(--night);
-      color: var(--paper);
-    }
-    .btn.secondary {
-      background: #f0eef8;
-      color: var(--night);
-    }
-
-    /* ── Section heading ── */
-    .section-label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 52px 0 20px;
-    }
+    .btn:hover { opacity: 0.75; }
+    .btn.primary   { background: var(--night); color: #fff; }
+    .btn.secondary { background: #f0eef8; color: var(--night); }
 
     /* ── Footer ── */
     footer {
       text-align: center;
-      padding: 48px 24px;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
       color: var(--muted);
-      font-size: 0.82rem;
-    }
-    .signature {
-      font-family: 'Fraunces', serif;
-      font-size: 1rem;
-      color: var(--ink);
-      margin-bottom: 6px;
+      font-size: 0.78rem;
     }
   </style>
 </head>
 <body>
 
-<div class="skyline">
-  <div class="moon-deco" aria-hidden="true"></div>
+<header>
   <div class="container">
     <span class="eyebrow">claude-learnings</span>
     <h1>Kuratierte Lernpfade<br>für Programmierer.</h1>
-    <p class="lead">Jedes Topic — von Beginner bis Advanced — mit Ressourcen, lauffähigen Beispielen und interaktiven Seiten.</p>
+    <p class="lead">Von Beginner bis Advanced — mit Ressourcen, lauffähigen Beispielen und interaktiven Seiten.</p>
   </div>
-</div>
+</header>
 
 <main>
   <div class="container">
@@ -252,14 +202,14 @@
     <p class="section-label">🌙 Vom Träumer eingerichtet</p>
     <div class="topic-grid">
 
-      <div class="topic-card">
+      <div class="topic-card" onclick="location.href='./jinja-templates/index.html'">
         <div class="topic-num">Topic 05</div>
         <h2>Jinja Templates</h2>
         <p>Template-Vererbung, Filter &amp; Macros, Kontext/Scoping und Autoescape/SSTI — die vier verbundenen Konzepte für Flask, Ansible &amp; Co.</p>
         <div class="tag-row">
           <span class="tag moon">Träumer</span>
           <span class="tag">Python</span>
-          <span class="tag web">Web</span>
+          <span class="tag green">Web</span>
         </div>
         <div class="link-row">
           <a class="btn primary" href="./jinja-templates/index.html">Webpage öffnen →</a>
@@ -267,14 +217,14 @@
         </div>
       </div>
 
-      <div class="topic-card">
+      <div class="topic-card" onclick="location.href='./oauth-2/index.html'">
         <div class="topic-num">Topic 06</div>
         <h2>OAuth 2.0</h2>
         <p>Rollen &amp; Grants, Authorization Code + PKCE, OpenID Connect (OIDC) und JWTs — plus Standards-Landkarte (RFC 6749, 7636, 8725, OIDC Core 1.0).</p>
         <div class="tag-row">
           <span class="tag moon">Träumer</span>
           <span class="tag">Security</span>
-          <span class="tag web">RFC</span>
+          <span class="tag green">RFC</span>
         </div>
         <div class="link-row">
           <a class="btn primary" href="./oauth-2/index.html">Webpage öffnen →</a>
@@ -282,10 +232,10 @@
         </div>
       </div>
 
-      <div class="topic-card">
+      <div class="topic-card" onclick="location.href='./agent-tooling/index.html'">
         <div class="topic-num">Topic 07</div>
         <h2>Agent Tooling</h2>
-        <p>Wie man eine Persona als wiederverwendbares Werkzeug in Claude Code baut: Subagent + Skill + Plugin + Persona-Klasse als verbindendes Pattern.</p>
+        <p>Wie man eine Persona als wiederverwendbares Werkzeug baut: Subagent + Skill + Plugin + Persona-Klasse als verbindendes Pattern.</p>
         <div class="tag-row">
           <span class="tag moon">Träumer</span>
           <span class="tag">AI</span>
@@ -302,7 +252,7 @@
     <p class="section-label">✦ Von Aria kuratiert</p>
     <div class="topic-grid">
 
-      <div class="topic-card">
+      <div class="topic-card" onclick="location.href='./art-advanced/index.html'">
         <div class="topic-num">Topic 08</div>
         <h2>Advanced Art Guide</h2>
         <p>Farbtheorie (20 Topics), Manga zeichnen und Schneller &amp; Fertiger werden — für Leute die schon zeichnen können und formelle Lücken schließen wollen.</p>
@@ -321,7 +271,7 @@
     <p class="section-label">📚 Klassische Lernpfade</p>
     <div class="topic-grid">
 
-      <div class="topic-card">
+      <div class="topic-card" onclick="location.href='./regex/README.md'">
         <div class="topic-num">Topic 01</div>
         <h2>Regular Expressions</h2>
         <p>Pattern Matching und Textverarbeitung — von Basis-Metacharacters bis zu Lookahead/Lookbehind-Techniken.</p>
@@ -331,7 +281,7 @@
         </div>
       </div>
 
-      <div class="topic-card">
+      <div class="topic-card" onclick="location.href='./latex/README.md'">
         <div class="topic-num">Topic 02</div>
         <h2>LaTeX</h2>
         <p>Professionelles Dokument-Typesetting — online-fokussiert (Overleaf, TeXLive), keine lokale Installation nötig.</p>
@@ -341,7 +291,7 @@
         </div>
       </div>
 
-      <div class="topic-card">
+      <div class="topic-card" onclick="location.href='./data-structures-algorithms/README.md'">
         <div class="topic-num">Topic 03</div>
         <h2>Data Structures &amp; Algorithms</h2>
         <p>Arrays, Trees, Graphs, Sorting und Komplexitätsanalyse — Fundament effizienter Programmierung.</p>
@@ -351,7 +301,7 @@
         </div>
       </div>
 
-      <div class="topic-card">
+      <div class="topic-card" onclick="location.href='./tensorflow-keras/README.md'">
         <div class="topic-num">Topic 04</div>
         <h2>TensorFlow &amp; Keras</h2>
         <p>Machine-Learning-Grundlagen und neuronale Netze in Python — ideale Vorbereitung für ML-Kurse.</p>
@@ -367,8 +317,7 @@
 </main>
 
 <footer>
-  <p class="signature">claude-learnings 🌙</p>
-  <p>Kuratierte Ressourcen · faktengeprüft · lauffähige Beispiele</p>
+  claude-learnings · kuratierte Ressourcen · faktengeprüft · lauffähige Beispiele
 </footer>
 
 </body>
