@@ -1,0 +1,106 @@
+{
+  "version": "1.0.0",
+  "description": "Visual style definitions for domains, groups, and topics. Icon names reference the Lucide icon set; emoji serve as universal fallback.",
+  "domains": {
+    "computer-science": {
+      "color": {
+        "primary":    "#3B82F6",
+        "secondary":  "#1D4ED8",
+        "accent":     "#BFDBFE",
+        "surface":    "#EFF6FF",
+        "text":       "#1E3A5F"
+      },
+      "gradient": "linear-gradient(135deg, #3B82F6, #1D4ED8)",
+      "icon": { "lucide": "cpu", "emoji": "🖥️" }
+    },
+    "data-and-ai": {
+      "color": {
+        "primary":    "#8B5CF6",
+        "secondary":  "#6D28D9",
+        "accent":     "#DDD6FE",
+        "surface":    "#F5F3FF",
+        "text":       "#3B0764"
+      },
+      "gradient": "linear-gradient(135deg, #8B5CF6, #6D28D9)",
+      "icon": { "lucide": "brain-circuit", "emoji": "🧠" }
+    },
+    "web-and-infrastructure": {
+      "color": {
+        "primary":    "#14B8A6",
+        "secondary":  "#0F766E",
+        "accent":     "#99F6E4",
+        "surface":    "#F0FDFA",
+        "text":       "#134E4A"
+      },
+      "gradient": "linear-gradient(135deg, #14B8A6, #0F766E)",
+      "icon": { "lucide": "globe", "emoji": "🌐" }
+    },
+    "creative": {
+      "color": {
+        "primary":    "#F59E0B",
+        "secondary":  "#D97706",
+        "accent":     "#FDE68A",
+        "surface":    "#FFFBEB",
+        "text":       "#78350F"
+      },
+      "gradient": "linear-gradient(135deg, #F59E0B, #D97706)",
+      "icon": { "lucide": "palette", "emoji": "🎨" }
+    }
+  },
+  "groups": {
+    "cs-theory-systems": {
+      "color": { "primary": "#2563EB", "accent": "#DBEAFE" },
+      "icon": { "lucide": "layers", "emoji": "📐" }
+    },
+    "software-engineering": {
+      "color": { "primary": "#4F46E5", "accent": "#E0E7FF" },
+      "icon": { "lucide": "code-2", "emoji": "🏗️" }
+    },
+    "ai-ml-data-science": {
+      "color": { "primary": "#7C3AED", "accent": "#EDE9FE" },
+      "icon": { "lucide": "sparkles", "emoji": "✨" }
+    },
+    "web-apis-security": {
+      "color": { "primary": "#0D9488", "accent": "#CCFBF1" },
+      "icon": { "lucide": "shield-check", "emoji": "🔐" }
+    },
+    "devops-tooling": {
+      "color": { "primary": "#059669", "accent": "#D1FAE5" },
+      "icon": { "lucide": "container", "emoji": "⚙️" }
+    },
+    "creative-documentation": {
+      "color": { "primary": "#EA580C", "accent": "#FFEDD5" },
+      "icon": { "lucide": "pen-tool", "emoji": "✏️" }
+    }
+  },
+  "topics": {
+    "agent-tooling":              { "icon": { "lucide": "bot",             "emoji": "🤖" } },
+    "android-emulator":           { "icon": { "lucide": "smartphone",      "emoji": "📱" } },
+    "api-rest":                   { "icon": { "lucide": "plug",            "emoji": "🔌" } },
+    "art-advanced":               { "icon": { "lucide": "image",           "emoji": "🖼️" } },
+    "compiler-design":            { "icon": { "lucide": "file-code",       "emoji": "⚙️" } },
+    "computer-networks":          { "icon": { "lucide": "network",         "emoji": "🕸️" } },
+    "computer-vision":            { "icon": { "lucide": "eye",             "emoji": "👁️" } },
+    "data-structures-algorithms": { "icon": { "lucide": "git-branch",      "emoji": "🌿" } },
+    "databases":                  { "icon": { "lucide": "database",        "emoji": "🗄️" } },
+    "design-patterns":            { "icon": { "lucide": "layout-template", "emoji": "🧩" } },
+    "discrete-math":              { "icon": { "lucide": "sigma",           "emoji": "∑" } },
+    "docker-containers":          { "icon": { "lucide": "box",             "emoji": "📦" } },
+    "functional-programming":     { "icon": { "lucide": "function-square", "emoji": "λ" } },
+    "git-version-control":        { "icon": { "lucide": "git-commit",      "emoji": "🔖" } },
+    "jinja-templates":            { "icon": { "lucide": "braces",          "emoji": "📝" } },
+    "latex":                      { "icon": { "lucide": "file-text",       "emoji": "📄" } },
+    "linear-algebra":             { "icon": { "lucide": "grid-2x2",        "emoji": "🔢" } },
+    "nlp":                        { "icon": { "lucide": "message-square",  "emoji": "💬" } },
+    "oauth-2":                    { "icon": { "lucide": "key-round",       "emoji": "🔑" } },
+    "operating-systems":          { "icon": { "lucide": "monitor",         "emoji": "🖥️" } },
+    "pandas-data-wrangling":      { "icon": { "lucide": "table",           "emoji": "📊" } },
+    "regex":                      { "icon": { "lucide": "search-code",     "emoji": "🔍" } },
+    "security-cryptography":      { "icon": { "lucide": "lock",            "emoji": "🔒" } },
+    "statistics":                 { "icon": { "lucide": "bar-chart-2",     "emoji": "📈" } },
+    "system-design":              { "icon": { "lucide": "sitemap",         "emoji": "🗺️" } },
+    "tensorflow-keras":           { "icon": { "lucide": "layers",          "emoji": "🧱" } },
+    "watercolor-mixing":          { "icon": { "lucide": "droplets",        "emoji": "🎨" } },
+    "web-performance":            { "icon": { "lucide": "zap",             "emoji": "⚡" } }
+  }
+}
