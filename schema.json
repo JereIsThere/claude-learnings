@@ -1,6 +1,32 @@
 {
-  "version": "1.0.0",
-  "description": "Topic groupings for the claude-learnings repository. Each group bundles related learning paths by domain.",
+  "version": "2.0.0",
+  "description": "Three-level taxonomy for the claude-learnings repository: domains → groups → topics.",
+  "domains": [
+    {
+      "id": "computer-science",
+      "label": "Computer Science",
+      "description": "Core CS theory and the engineering practices built on top of it.",
+      "groups": ["cs-theory-systems", "software-engineering"]
+    },
+    {
+      "id": "data-and-ai",
+      "label": "Data & AI",
+      "description": "Mathematics, statistics, and the full ML/AI stack.",
+      "groups": ["ai-ml-data-science"]
+    },
+    {
+      "id": "web-and-infrastructure",
+      "label": "Web & Infrastructure",
+      "description": "Everything that runs, ships, and secures software in production.",
+      "groups": ["web-apis-security", "devops-tooling"]
+    },
+    {
+      "id": "creative",
+      "label": "Creative & Documentation",
+      "description": "Visual arts, analogue techniques, and scientific typesetting.",
+      "groups": ["creative-documentation"]
+    }
+  ],
   "groups": [
     {
       "id": "cs-theory-systems",
