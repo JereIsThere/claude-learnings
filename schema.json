@@ -1,0 +1,190 @@
+{
+  "version": "1.0.0",
+  "description": "Topic groupings for the claude-learnings repository. Each group bundles related learning paths by domain.",
+  "groups": [
+    {
+      "id": "cs-theory-systems",
+      "label": "CS Theory & Systems",
+      "description": "Foundational computer science — how computers work from the ground up.",
+      "topics": [
+        "data-structures-algorithms",
+        "discrete-math",
+        "compiler-design",
+        "operating-systems",
+        "computer-networks",
+        "databases"
+      ]
+    },
+    {
+      "id": "ai-ml-data-science",
+      "label": "AI, ML & Data Science",
+      "description": "Machine learning, deep learning, and the mathematical and data tooling that powers them.",
+      "topics": [
+        "tensorflow-keras",
+        "computer-vision",
+        "nlp",
+        "pandas-data-wrangling",
+        "statistics",
+        "linear-algebra"
+      ]
+    },
+    {
+      "id": "software-engineering",
+      "label": "Software Engineering & Architecture",
+      "description": "Principles and practices for writing maintainable, well-structured software at scale.",
+      "topics": [
+        "design-patterns",
+        "system-design",
+        "functional-programming",
+        "git-version-control"
+      ]
+    },
+    {
+      "id": "web-apis-security",
+      "label": "Web, APIs & Security",
+      "description": "Building and securing web services — from REST conventions to auth and performance.",
+      "topics": [
+        "api-rest",
+        "oauth-2",
+        "web-performance",
+        "security-cryptography",
+        "jinja-templates"
+      ]
+    },
+    {
+      "id": "devops-tooling",
+      "label": "DevOps, Tooling & Automation",
+      "description": "Infrastructure, containerisation, mobile targets, and developer productivity tools.",
+      "topics": [
+        "docker-containers",
+        "android-emulator",
+        "regex",
+        "agent-tooling"
+      ]
+    },
+    {
+      "id": "creative-documentation",
+      "label": "Creative & Documentation",
+      "description": "Non-programming disciplines — visual arts, watercolour technique, and scientific typesetting.",
+      "topics": [
+        "art-advanced",
+        "watercolor-mixing",
+        "latex"
+      ]
+    }
+  ],
+  "topics": {
+    "agent-tooling": {
+      "label": "Agent Tooling",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "android-emulator": {
+      "label": "Android Emulator",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "api-rest": {
+      "label": "REST APIs",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "art-advanced": {
+      "label": "Art (Advanced)",
+      "levels": ["advanced"]
+    },
+    "compiler-design": {
+      "label": "Compiler Design",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "computer-networks": {
+      "label": "Computer Networks",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "computer-vision": {
+      "label": "Computer Vision",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "data-structures-algorithms": {
+      "label": "Data Structures & Algorithms",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "databases": {
+      "label": "Databases",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "design-patterns": {
+      "label": "Design Patterns",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "discrete-math": {
+      "label": "Discrete Mathematics",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "docker-containers": {
+      "label": "Docker & Containers",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "functional-programming": {
+      "label": "Functional Programming",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "git-version-control": {
+      "label": "Git & Version Control",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "jinja-templates": {
+      "label": "Jinja Templates",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "latex": {
+      "label": "LaTeX",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "linear-algebra": {
+      "label": "Linear Algebra",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "nlp": {
+      "label": "Natural Language Processing",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "oauth-2": {
+      "label": "OAuth 2.0",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "operating-systems": {
+      "label": "Operating Systems",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "pandas-data-wrangling": {
+      "label": "Pandas & Data Wrangling",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "regex": {
+      "label": "Regular Expressions",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "security-cryptography": {
+      "label": "Security & Cryptography",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "statistics": {
+      "label": "Statistics",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "system-design": {
+      "label": "System Design",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "tensorflow-keras": {
+      "label": "TensorFlow & Keras",
+      "levels": ["beginner", "intermediate", "advanced"]
+    },
+    "watercolor-mixing": {
+      "label": "Watercolour Mixing",
+      "levels": ["intermediate", "advanced"]
+    },
+    "web-performance": {
+      "label": "Web Performance",
+      "levels": ["beginner", "intermediate", "advanced"]
+    }
+  }
+}
